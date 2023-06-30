@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { Box, Button, Grid, Link } from "@mui/material";
 import { getEtherscanLink } from "@/utils";
 import contracts from "@/config/contracts";
-import AmountInput from "../inputs/AmountInput";
 import {
   Address,
   useAccount,
@@ -14,8 +13,9 @@ import {
 } from "wagmi";
 import BaseRewardPool from "../../abis/BaseRewardPool.json";
 import { BigNumber, ethers } from "ethers";
-import WaitingModal from "../waiting-modal/WaitingModal";
 import { IERC20, LITDepositor } from "@/abis";
+import AmountInput from "@/components/inputs/AmountInput";
+import WaitingModal from "@/components/waiting-modal/WaitingModal";
 
 export default function CdxLitTabs() {
   const { chain } = useNetwork();
@@ -109,6 +109,10 @@ export default function CdxLitTabs() {
   useEffect(() => {
     if (convertApproveStatus == "success") {
       reloadWantAllowance();
+      setIsActive(false);
+    }
+    if (convertApproveStatus == "loading") {
+      setIsActive(true);
     }
   }, [convertApproveStatus, reloadWantAllowance]);
 
@@ -125,6 +129,10 @@ export default function CdxLitTabs() {
       reloadWantBalance();
       reloadWantAllowance();
       reloadCdxLITBalance();
+      setIsActive(false);
+    }
+    if (convertStatus == "loading") {
+      setIsActive(true);
     }
   }, [
     convertStatus,
@@ -145,6 +153,10 @@ export default function CdxLitTabs() {
   useEffect(() => {
     if (stakeApproveStatus == "success") {
       reloadCdxLITAllowance();
+      setIsActive(false);
+    }
+    if (stakeApproveStatus == "loading") {
+      setIsActive(true);
     }
   }, [stakeApproveStatus, reloadCdxLITAllowance]);
 
@@ -161,6 +173,10 @@ export default function CdxLitTabs() {
       reloadCdxLITBalance();
       reloadCdxLITAllowance();
       reloadStakedBalance();
+      setIsActive(false);
+    }
+    if (stakeStatus == "loading") {
+      setIsActive(true);
     }
   }, [
     stakeStatus,
@@ -181,16 +197,15 @@ export default function CdxLitTabs() {
     if (unstakeStatus == "success") {
       reloadCdxLITBalance();
       reloadStakedBalance();
+      setIsActive(false);
+    }
+    if (unstakeStatus == "loading") {
+      setIsActive(true);
     }
   }, [unstakeStatus, reloadCdxLITBalance, reloadStakedBalance]);
 
-  console.log("wantBalance", wantBalance?.toString());
-  console.log("wantAllowance", wantAllowance?.toString());
-  console.log("convertAmountBigNumber", convertAmountBigNumber?.toString());
-  console.log("cdxLITBalance", cdxLITBalance?.toString());
-  console.log("cdxLITAllowance", cdxLITAllowance?.toString());
   return (
-    <Box className="flex-col">
+    <Box className="flex-col grey-card">
       <WaitingModal isActive={isActive} setIsActive={setIsActive} />
       <Tabs
         value={index}
@@ -291,7 +306,7 @@ export default function CdxLitTabs() {
                     onChange={(newValue) => {
                       setStakeAmount(newValue);
                     }}
-                    error={stakeAmountBigNumber.gt(wantBalance || 0)}
+                    error={stakeAmountBigNumber.gt(cdxLITBalance || 0)}
                   />
                 </Grid>
                 <Grid item xs={6} className="flex items-center justify-center">

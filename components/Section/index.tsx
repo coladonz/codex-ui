@@ -1,3 +1,4 @@
+import { Box } from "@mui/material";
 import { Inter } from "next/font/google";
 import { ReactElement } from "react";
 
@@ -8,11 +9,11 @@ export default function Section(props: {
   body: ReactElement;
 }) {
   return (
-    <div className="flex flex-col">
-      <div className="p-4 card-header w-full bg-zinc-800/30">
+    <Box className="flex flex-col mb-10">
+      <Box className="p-4 card-header w-full bg-zinc-800/30">
         {props.header}
-      </div>
-      <div className="bg-gray-300 card-body">{props.body}</div>
-    </div>
+      </Box>
+      <Box className="card-body">{props.body}</Box>
+    </Box>
   );
 }

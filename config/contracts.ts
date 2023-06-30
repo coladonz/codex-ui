@@ -1,3 +1,9 @@
+export type GaugeInfo = {
+    pid: number,
+    gauge: string,
+    bunniLp: string,
+}
+
 const contracts = {
     BALANCER_20WETH_80LIT: "0x9232a548DD9E81BaC65500b5e0d918F8Ba93675C",
     OLIT: "0x627fee87d0D9D2c55098A06ac805Db8F98B158Aa",
@@ -17,13 +23,19 @@ const contracts = {
     cdxLITRewardPool: '0x1757a98c1333B9dc8D408b194B2279b5AFDF70Cc',
     cdxLocker: '0x26291175Fa0Ea3C8583fEdEB56805eA68289b105',
     cdxStakingProxy: '0x840748F7Fd3EA956E5f4c88001da5CC1ABCBc038',
-    gauges: [
-        {
-            pid: 0,
-            gauge: '0xa718193E1348FD4dEF3063E7F4b4154BAAcB0214',
-            bunniLp: '0x846A4566802C27eAC8f72D594F4Ca195Fe41C07a',
-        }
-    ]
 }
+
+export const bunniGauges = [
+    {
+        pid: 0,
+        gauge: '0xa718193E1348FD4dEF3063E7F4b4154BAAcB0214',
+        bunniLp: '0x846A4566802C27eAC8f72D594F4Ca195Fe41C07a',
+    },
+    {
+        pid: 1,
+        gauge: '0xa718193E1348FD4dEF3063E7F4b4154BAAcB0214',
+        bunniLp: '0x846A4566802C27eAC8f72D594F4Ca195Fe41C07a',
+    }
+];
 
 export default contracts;
