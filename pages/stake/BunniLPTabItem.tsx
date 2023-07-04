@@ -3,449 +3,350 @@ import Tab from "@mui/material/Tab";
 import { useEffect, useState } from "react";
 import { Box, Button, Grid, Link } from "@mui/material";
 import { getEtherscanLink } from "@/utils";
-import contracts from "@/config/contracts";
+import contracts, { GaugeInfo } from "@/config/contracts";
 import {
   Address,
   useAccount,
   useContractRead,
   useContractWrite,
   useNetwork,
+  useWaitForTransaction,
 } from "wagmi";
-import BaseRewardPool from "../../abis/BaseRewardPool.json";
 import { BigNumber, ethers } from "ethers";
-import { IERC20, LITDepositor } from "@/abis";
+import { IERC20, BaseRewardPool, Booster } from "@/abis";
 import AmountInput from "@/components/inputs/AmountInput";
 import WaitingModal from "@/components/waiting-modal/WaitingModal";
 
-export default function BunniLPTabItem() {
+export default function BunniLPTabItem({ gauge }: { gauge: GaugeInfo }) {
   const { chain } = useNetwork();
   const { address } = useAccount();
   const [isActive, setIsActive] = useState(false);
+  const [openDropdown, setOpenDropdown] = useState(false);
   const [index, setIndex] = useState(0);
-  const [convertAmount, setConvertAmount] = useState("0");
-  const [stakeAmount, setStakeAmount] = useState("0");
-  const [unstakeAmount, setUnstakeAmount] = useState("0");
-  const [convertAmountBigNumber, setConvertAmountBigNumber] = useState(
+  const [depositAmount, setDepositAmount] = useState("0");
+  const [withdrawAmount, setWithdrawAmount] = useState("0");
+  const [depositAmountBigNumber, setDepositAmountBigNumber] = useState(
     BigNumber.from("0")
   );
-  const [stakeAmountBigNumber, setStakeAmountBigNumber] = useState(
-    BigNumber.from("0")
-  );
-  const [unstakeAmountBigNumber, setUnstakeAmountBigNumber] = useState(
+  const [withdrawAmountBigNumber, setWithdrawAmountBigNumber] = useState(
     BigNumber.from("0")
   );
 
   const { data: wantBalance, refetch: reloadWantBalance } = useContractRead({
-    address: contracts.BALANCER_20WETH_80LIT as Address,
+    address: gauge.bunniLp as Address,
     abi: IERC20,
     functionName: "balanceOf",
     args: [address],
   });
-  const { data: cdxLITBalance, refetch: reloadCdxLITBalance } = useContractRead(
-    {
-      address: contracts.cdxLIT as Address,
+  const { data: depositedBalance, refetch: reloadDepositedBalance } =
+    useContractRead({
+      address: gauge.oLITRewards as Address,
       abi: IERC20,
       functionName: "balanceOf",
       args: [address],
-    }
-  );
+    });
   const { data: wantAllowance, refetch: reloadWantAllowance } = useContractRead(
     {
-      address: contracts.BALANCER_20WETH_80LIT as Address,
+      address: gauge.bunniLp as Address,
       abi: IERC20,
       functionName: "allowance",
-      args: [address, contracts.litDepositor],
-    }
-  );
-  const { data: cdxLITAllowance, refetch: reloadCdxLITAllowance } =
-    useContractRead({
-      address: contracts.cdxLIT as Address,
-      abi: IERC20,
-      functionName: "allowance",
-      args: [address, contracts.cdxLITRewardPool],
-    });
-  const { data: stakedBalance, refetch: reloadStakedBalance } = useContractRead(
-    {
-      address: contracts.cdxLITRewardPool as Address,
-      abi: BaseRewardPool,
-      functionName: "balanceOf",
-      args: [address],
+      args: [address, contracts.booster],
     }
   );
 
   useEffect(() => {
     let amount = BigNumber.from(0);
     try {
-      amount = ethers.utils.parseEther(convertAmount);
+      amount = ethers.utils.parseEther(depositAmount);
     } catch {}
-    setConvertAmountBigNumber(amount);
-  }, [convertAmount]);
+    setDepositAmountBigNumber(amount);
+  }, [depositAmount]);
 
   useEffect(() => {
     let amount = BigNumber.from(0);
     try {
-      amount = ethers.utils.parseEther(stakeAmount);
+      amount = ethers.utils.parseEther(withdrawAmount);
     } catch {}
-    setStakeAmountBigNumber(amount);
-  }, [stakeAmount]);
+    setWithdrawAmountBigNumber(amount);
+  }, [withdrawAmount]);
 
-  useEffect(() => {
-    let amount = BigNumber.from(0);
-    try {
-      amount = ethers.utils.parseEther(unstakeAmount);
-    } catch {}
-    setUnstakeAmountBigNumber(amount);
-  }, [unstakeAmount]);
-
-  const { writeAsync: approveWant, status: convertApproveStatus } =
+  const { writeAsync: approveWant, status: depositApproveStatus } =
     useContractWrite({
-      address: contracts.BALANCER_20WETH_80LIT as Address,
+      address: gauge.bunniLp as Address,
       abi: IERC20,
       functionName: "approve",
-      args: [contracts.litDepositor, convertAmountBigNumber],
+      args: [contracts.booster, depositAmountBigNumber],
       chainId: chain?.id,
     });
 
   useEffect(() => {
-    if (convertApproveStatus == "success") {
+    if (depositApproveStatus == "success") {
       reloadWantAllowance();
       setIsActive(false);
-    }
-    if (convertApproveStatus == "loading") {
+    } else if (depositApproveStatus == "loading") {
       setIsActive(true);
     }
-  }, [convertApproveStatus, reloadWantAllowance]);
+  }, [depositApproveStatus, reloadWantAllowance]);
 
-  const { writeAsync: convert, status: convertStatus } = useContractWrite({
-    address: contracts.litDepositor as Address,
-    abi: LITDepositor,
+  const { writeAsync: deposit, status: depositStatus } = useContractWrite({
+    address: contracts.booster as Address,
+    abi: Booster,
     functionName: "deposit",
-    args: [convertAmountBigNumber, false, ethers.constants.AddressZero],
+    args: [gauge.pid, depositAmountBigNumber, true],
     chainId: chain?.id,
   });
 
   useEffect(() => {
-    if (convertStatus == "success") {
+    if (depositStatus == "success") {
       reloadWantBalance();
       reloadWantAllowance();
-      reloadCdxLITBalance();
+      reloadDepositedBalance();
       setIsActive(false);
     }
-    if (convertStatus == "loading") {
+    if (depositStatus == "loading") {
       setIsActive(true);
     }
   }, [
-    convertStatus,
-    reloadCdxLITBalance,
+    depositStatus,
+    reloadDepositedBalance,
     reloadWantAllowance,
     reloadWantBalance,
   ]);
 
-  const { writeAsync: approveCdxLIT, status: stakeApproveStatus } =
-    useContractWrite({
-      address: contracts.cdxLIT as Address,
-      abi: IERC20,
-      functionName: "approve",
-      args: [contracts.cdxLITRewardPool, stakeAmountBigNumber],
-      chainId: chain?.id,
-    });
-
-  useEffect(() => {
-    if (stakeApproveStatus == "success") {
-      reloadCdxLITAllowance();
-      setIsActive(false);
-    }
-    if (stakeApproveStatus == "loading") {
-      setIsActive(true);
-    }
-  }, [stakeApproveStatus, reloadCdxLITAllowance]);
-
-  const { writeAsync: stake, status: stakeStatus } = useContractWrite({
-    address: contracts.cdxLITRewardPool as Address,
-    abi: BaseRewardPool,
-    functionName: "stake",
-    args: [stakeAmountBigNumber],
-    chainId: chain?.id,
-  });
-
-  useEffect(() => {
-    if (stakeStatus == "success") {
-      reloadCdxLITBalance();
-      reloadCdxLITAllowance();
-      reloadStakedBalance();
-      setIsActive(false);
-    }
-    if (stakeStatus == "loading") {
-      setIsActive(true);
-    }
-  }, [
-    stakeStatus,
-    reloadCdxLITBalance,
-    reloadCdxLITAllowance,
-    reloadStakedBalance,
-  ]);
-
-  const { writeAsync: unstake, status: unstakeStatus } = useContractWrite({
-    address: contracts.cdxLITRewardPool as Address,
+  const { writeAsync: withdraw, status: withdrawStatus } = useContractWrite({
+    address: gauge.oLITRewards as Address,
     abi: BaseRewardPool,
     functionName: "withdraw",
-    args: [unstakeAmountBigNumber, false],
+    args: [withdrawAmountBigNumber, false],
     chainId: chain?.id,
   });
 
   useEffect(() => {
-    if (unstakeStatus == "success") {
-      reloadCdxLITBalance();
-      reloadStakedBalance();
+    if (withdrawStatus == "success") {
+      reloadDepositedBalance();
       setIsActive(false);
     }
-    if (unstakeStatus == "loading") {
+    if (withdrawStatus == "loading") {
       setIsActive(true);
     }
-  }, [unstakeStatus, reloadCdxLITBalance, reloadStakedBalance]);
+  }, [withdrawStatus, reloadDepositedBalance]);
 
   return (
-    <Box className="flex-col grey-card">
+    <Box className="flex-col">
       <WaitingModal isActive={isActive} setIsActive={setIsActive} />
-      <Tabs
-        value={index}
-        onChange={(_, newValue) => {
-          setIndex(newValue);
-        }}
-        aria-label="basic tabs example"
+      <Box
+        className="flex p-4 mb-1 grey-card cursor-pointer"
         sx={{
-          boxShadow: "-1px 1px 2px #181818, 1px -1px 2px #1e1e1e",
+          fontSize: "14px",
+          ":hover": {
+            opacity: "0.85",
+          },
+        }}
+        onClick={() => {
+          setOpenDropdown(!openDropdown);
         }}
       >
-        <Tab
-          label="CONVERT/STAKE"
-          id="cdxlit-0"
-          value={0}
-          sx={{
-            color: "white !important",
-          }}
-        />
-        <Tab
-          label="UNSTAKE"
-          id="cdxlit-1"
-          value={1}
-          sx={{
-            color: "white !important",
-          }}
-        />
-        <Tab
-          label="INFO"
-          id="cdxlit-2"
-          value={2}
-          sx={{
-            color: "white !important",
-          }}
-        />
-      </Tabs>
-      <Box className="p-4 pt-6">
-        {index === 0 && (
-          <Box className="flex-col">
-            <Box>
-              Convert Balancer 20WETH/80LIT LP to cdxLIT, stake cdxLIT for
-              additional rewards coming from Codex.
-            </Box>
-            <Box className="mt-4">
-              <Grid container spacing={2}>
-                <Grid item xs={6}>
-                  <AmountInput
-                    label="Amount of Balancer 20WETH/80LIT to convert"
-                    value={convertAmount}
-                    onChange={(newValue) => {
-                      setConvertAmount(newValue);
-                    }}
-                    error={convertAmountBigNumber.gt(wantBalance || 0)}
-                  />
-                </Grid>
-                <Grid item xs={6} className="flex items-center justify-center">
-                  <Grid container spacing={2}>
-                    <Grid item xs={3}>
-                      <Button
-                        color="primary"
-                        variant="outlined"
-                        className="w-full"
-                        disabled={
-                          convertAmountBigNumber.eq(0) ||
-                          convertAmountBigNumber.gt(wantBalance || 0) ||
-                          convertAmountBigNumber.lte(wantAllowance || 0)
-                        }
-                        onClick={() => approveWant()}
-                      >
-                        Approve
-                      </Button>
-                    </Grid>
-                    <Grid item xs={3}>
-                      <Button
-                        color="primary"
-                        variant="outlined"
-                        className="w-full"
-                        disabled={
-                          convertAmountBigNumber.eq(0) ||
-                          convertAmountBigNumber.gt(wantBalance || 0) ||
-                          convertAmountBigNumber.gt(wantAllowance || 0)
-                        }
-                        onClick={() => convert()}
-                      >
-                        Convert
-                      </Button>
-                    </Grid>
-                  </Grid>
-                </Grid>
-              </Grid>
-            </Box>
-            <Box className="mt-4">
-              <Grid container spacing={2}>
-                <Grid item xs={6}>
-                  <AmountInput
-                    label="Amount of cdxLIT to stake"
-                    value={stakeAmount}
-                    onChange={(newValue) => {
-                      setStakeAmount(newValue);
-                    }}
-                    error={stakeAmountBigNumber.gt(cdxLITBalance || 0)}
-                  />
-                </Grid>
-                <Grid item xs={6} className="flex items-center justify-center">
-                  <Grid container spacing={2}>
-                    <Grid item xs={3}>
-                      <Button
-                        color="primary"
-                        variant="outlined"
-                        className="w-full"
-                        disabled={
-                          stakeAmountBigNumber.eq(0) ||
-                          stakeAmountBigNumber.gt(cdxLITBalance || 0) ||
-                          stakeAmountBigNumber.lte(cdxLITAllowance || 0)
-                        }
-                        onClick={() => approveCdxLIT()}
-                      >
-                        Approve
-                      </Button>
-                    </Grid>
-                    <Grid item xs={3}>
-                      <Button
-                        color="primary"
-                        variant="outlined"
-                        className="w-full"
-                        disabled={
-                          stakeAmountBigNumber.eq(0) ||
-                          stakeAmountBigNumber.gt(cdxLITBalance || 0) ||
-                          stakeAmountBigNumber.gt(cdxLITAllowance || 0)
-                        }
-                        onClick={() => stake()}
-                      >
-                        Stake
-                      </Button>
-                    </Grid>
-                  </Grid>
-                </Grid>
-              </Grid>
-            </Box>
-          </Box>
-        )}
-
-        {index === 1 && (
-          <Box className="flex-col">
-            <Box>Unstake cdxLIT.</Box>
-            <Box className="mt-4">
-              <Grid container spacing={2}>
-                <Grid item xs={6}>
-                  <AmountInput
-                    label="Amount of cdxLIT to unstake"
-                    value={unstakeAmount}
-                    onChange={(newValue) => {
-                      setUnstakeAmount(newValue);
-                    }}
-                    error={unstakeAmountBigNumber.gt(stakedBalance || 0)}
-                  />
-                </Grid>
-                <Grid item xs={6} className="flex items-center justify-center">
-                  <Grid container spacing={2}>
-                    <Grid item xs={3}>
-                      <Button
-                        color="primary"
-                        variant="outlined"
-                        className="w-full"
-                        disabled={
-                          unstakeAmountBigNumber.eq(0) ||
-                          unstakeAmountBigNumber.gt(stakedBalance || 0)
-                        }
-                        onClick={() => unstake()}
-                      >
-                        Unstake
-                      </Button>
-                    </Grid>
-                  </Grid>
-                </Grid>
-              </Grid>
-            </Box>
-          </Box>
-        )}
-        {index === 2 && (
-          <Box className="flex-col">
-            <Grid container spacing={2}>
-              <Grid item xs={3}>
-                Balancer 20WETH/80LIT token address
-              </Grid>
-              <Grid item xs={9}>
-                <Link
-                  href={getEtherscanLink(contracts.BALANCER_20WETH_80LIT)}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  {contracts.BALANCER_20WETH_80LIT}
-                </Link>
-              </Grid>
-            </Grid>
-            <Grid container spacing={2}>
-              <Grid item xs={3}>
-                cdxLIT token address
-              </Grid>
-              <Grid item xs={9}>
-                <Link
-                  href={getEtherscanLink(contracts.cdxLIT)}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  {contracts.cdxLIT}
-                </Link>
-              </Grid>
-            </Grid>
-            <Grid container spacing={2}>
-              <Grid item xs={3}>
-                Deposit contract address
-              </Grid>
-              <Grid item xs={9}>
-                <Link
-                  href={getEtherscanLink(contracts.litDepositor)}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  {contracts.litDepositor}
-                </Link>
-              </Grid>
-            </Grid>
-            <Grid container spacing={2}>
-              <Grid item xs={3}>
-                Staking contract address
-              </Grid>
-              <Grid item xs={9}>
-                <Link
-                  href={getEtherscanLink(contracts.cdxLITRewardPool)}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  {contracts.cdxLITRewardPool}
-                </Link>
-              </Grid>
-            </Grid>
-          </Box>
-        )}
+        <h3>{gauge.name}</h3>
       </Box>
+      {openDropdown && (
+        <Box className="grey-card">
+          <Tabs
+            value={index}
+            onChange={(_, newValue) => {
+              setIndex(newValue);
+            }}
+            aria-label="basic tabs example"
+            sx={{
+              boxShadow: "-1px 1px 2px #181818, 1px -1px 2px #1e1e1e",
+            }}
+          >
+            <Tab
+              label="DEPOSIT"
+              id="cdxlit-0"
+              value={0}
+              sx={{
+                color: "white !important",
+              }}
+            />
+            <Tab
+              label="WITHDRAW"
+              id="cdxlit-1"
+              value={1}
+              sx={{
+                color: "white !important",
+              }}
+            />
+            <Tab
+              label="INFO"
+              id="cdxlit-2"
+              value={2}
+              sx={{
+                color: "white !important",
+              }}
+            />
+          </Tabs>
+          <Box className="p-4 pt-6">
+            {index === 0 && (
+              <Box className="flex-col">
+                <Box>
+                  Deposit Bunni LP into Codex to earn CDX on top of Bunni's
+                  native rewards
+                </Box>
+                <Box className="mt-4">
+                  <Grid container spacing={2}>
+                    <Grid item xs={6}>
+                      <AmountInput
+                        label="Bunni LP Amount"
+                        value={depositAmount}
+                        onChange={(newValue) => {
+                          setDepositAmount(newValue);
+                        }}
+                        error={depositAmountBigNumber.gt(wantBalance || 0)}
+                      />
+                    </Grid>
+                    <Grid
+                      item
+                      xs={6}
+                      className="flex items-center justify-center"
+                    >
+                      <Grid container spacing={2}>
+                        <Grid item xs={3}>
+                          <Button
+                            color="primary"
+                            variant="outlined"
+                            className="w-full"
+                            disabled={
+                              depositAmountBigNumber.eq(0) ||
+                              depositAmountBigNumber.gt(wantBalance || 0) ||
+                              depositAmountBigNumber.lte(wantAllowance || 0)
+                            }
+                            onClick={() => approveWant()}
+                          >
+                            Approve
+                          </Button>
+                        </Grid>
+                        <Grid item xs={3}>
+                          <Button
+                            color="primary"
+                            variant="outlined"
+                            className="w-full"
+                            disabled={
+                              depositAmountBigNumber.eq(0) ||
+                              depositAmountBigNumber.gt(wantBalance || 0) ||
+                              depositAmountBigNumber.gt(wantAllowance || 0)
+                            }
+                            onClick={() => deposit()}
+                          >
+                            Deposit
+                          </Button>
+                        </Grid>
+                      </Grid>
+                    </Grid>
+                  </Grid>
+                </Box>
+              </Box>
+            )}
+
+            {index === 1 && (
+              <Box className="flex-col">
+                <Box>Withdraw Bunni LP from Codex</Box>
+                <Box className="mt-4">
+                  <Grid container spacing={2}>
+                    <Grid item xs={6}>
+                      <AmountInput
+                        label="Bunni LP amount"
+                        value={withdrawAmount}
+                        onChange={(newValue) => {
+                          setWithdrawAmount(newValue);
+                        }}
+                        error={withdrawAmountBigNumber.gt(
+                          depositedBalance || 0
+                        )}
+                      />
+                    </Grid>
+                    <Grid
+                      item
+                      xs={6}
+                      className="flex items-center justify-center"
+                    >
+                      <Grid container spacing={2}>
+                        <Grid item xs={3}>
+                          <Button
+                            color="primary"
+                            variant="outlined"
+                            className="w-full"
+                            disabled={
+                              withdrawAmountBigNumber.eq(0) ||
+                              withdrawAmountBigNumber.gt(depositedBalance || 0)
+                            }
+                            onClick={() => withdraw()}
+                          >
+                            Withdraw
+                          </Button>
+                        </Grid>
+                      </Grid>
+                    </Grid>
+                  </Grid>
+                </Box>
+              </Box>
+            )}
+            {index === 2 && (
+              <Box className="flex-col">
+                <Grid container spacing={2}>
+                  <Grid item xs={3}>
+                    Bunni LP token address
+                  </Grid>
+                  <Grid item xs={9}>
+                    <Link
+                      href={getEtherscanLink(gauge.bunniLp)}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      {gauge.bunniLp}
+                    </Link>
+                  </Grid>
+                </Grid>
+                <Grid container spacing={2}>
+                  <Grid item xs={3}>
+                    Bunni LP gauge address
+                  </Grid>
+                  <Grid item xs={9}>
+                    <Link
+                      href={getEtherscanLink(gauge.gauge)}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      {gauge.gauge}
+                    </Link>
+                  </Grid>
+                </Grid>
+                <Grid container spacing={2}>
+                  <Grid item xs={3}>
+                    Deposit contract address
+                  </Grid>
+                  <Grid item xs={9}>
+                    <Link
+                      href={getEtherscanLink(contracts.booster)}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      {contracts.booster}
+                    </Link>
+                  </Grid>
+                </Grid>
+                <Grid container spacing={2}>
+                  <Grid item xs={3}>
+                    Codex PID
+                  </Grid>
+                  <Grid item xs={9}>
+                    {gauge.pid}
+                  </Grid>
+                </Grid>
+              </Box>
+            )}
+          </Box>
+        </Box>
+      )}
     </Box>
   );
 }

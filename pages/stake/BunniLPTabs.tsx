@@ -23,7 +23,7 @@ export default function BunniLPTabs() {
     <Box>
       {bunniGauges.map((gauge) => {
         return (
-          <Box key={gauge.pid} className="mt-2 mb-2">
+          <Box key={gauge.pid} className="mt-3 mb-3">
             <BunniLPTabItem gauge={gauge} />
           </Box>
         );
