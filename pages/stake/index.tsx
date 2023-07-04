@@ -2,6 +2,7 @@ import Home from "@/components/Home";
 import Section from "@/components/Section";
 import CdxLitTabs from "./CdxLitTabs";
 import BunniLPTabs from "./BunniLPTabs";
+import CdxStakingTabs from "./CdxStakingTabs";
 
 export default function Stake() {
   return (
@@ -13,6 +14,10 @@ export default function Stake() {
       <Section
         header={<h3 className="text-md">Stake Bunni LP tokens</h3>}
         body={<BunniLPTabs />}
+      />
+      <Section
+        header={<h3 className="text-md">Stake CDX</h3>}
+        body={<CdxStakingTabs />}
       />
     </Home>
   );
