@@ -11,9 +11,8 @@ import {
   useContractWrite,
   useNetwork,
 } from "wagmi";
-import BaseRewardPool from "../../abis/BaseRewardPool.json";
 import { BigNumber, ethers } from "ethers";
-import { IERC20, LITDepositor } from "@/abis";
+import { IERC20, CdxRewardPool } from "@/abis";
 import AmountInput from "@/components/inputs/AmountInput";
 import WaitingModal from "@/components/waiting-modal/WaitingModal";
 
@@ -22,12 +21,8 @@ export default function CdxStakingTabs() {
   const { address } = useAccount();
   const [isActive, setIsActive] = useState(false);
   const [index, setIndex] = useState(0);
-  const [convertAmount, setConvertAmount] = useState("0");
   const [stakeAmount, setStakeAmount] = useState("0");
   const [unstakeAmount, setUnstakeAmount] = useState("0");
-  const [convertAmountBigNumber, setConvertAmountBigNumber] = useState(
-    BigNumber.from("0")
-  );
   const [stakeAmountBigNumber, setStakeAmountBigNumber] = useState(
     BigNumber.from("0")
   );
@@ -36,50 +31,27 @@ export default function CdxStakingTabs() {
   );
 
   const { data: wantBalance, refetch: reloadWantBalance } = useContractRead({
-    address: contracts.BALANCER_20WETH_80LIT as Address,
+    address: contracts.cdx as Address,
     abi: IERC20,
     functionName: "balanceOf",
     args: [address],
   });
-  const { data: cdxLITBalance, refetch: reloadCdxLITBalance } = useContractRead(
-    {
-      address: contracts.cdxLIT as Address,
-      abi: IERC20,
-      functionName: "balanceOf",
-      args: [address],
-    }
-  );
   const { data: wantAllowance, refetch: reloadWantAllowance } = useContractRead(
     {
-      address: contracts.BALANCER_20WETH_80LIT as Address,
+      address: contracts.cdx as Address,
       abi: IERC20,
       functionName: "allowance",
-      args: [address, contracts.litDepositor],
+      args: [address, contracts.cdxRewardPool],
     }
   );
-  const { data: cdxLITAllowance, refetch: reloadCdxLITAllowance } =
-    useContractRead({
-      address: contracts.cdxLIT as Address,
-      abi: IERC20,
-      functionName: "allowance",
-      args: [address, contracts.cdxLITRewardPool],
-    });
   const { data: stakedBalance, refetch: reloadStakedBalance } = useContractRead(
     {
-      address: contracts.cdxLITRewardPool as Address,
-      abi: BaseRewardPool,
+      address: contracts.cdxRewardPool as Address,
+      abi: CdxRewardPool,
       functionName: "balanceOf",
       args: [address],
     }
   );
-
-  useEffect(() => {
-    let amount = BigNumber.from(0);
-    try {
-      amount = ethers.utils.parseEther(convertAmount);
-    } catch {}
-    setConvertAmountBigNumber(amount);
-  }, [convertAmount]);
 
   useEffect(() => {
     let amount = BigNumber.from(0);
@@ -97,72 +69,28 @@ export default function CdxStakingTabs() {
     setUnstakeAmountBigNumber(amount);
   }, [unstakeAmount]);
 
-  const { writeAsync: approveWant, status: convertApproveStatus } =
+  const { writeAsync: approveCdx, status: stakeApproveStatus } =
     useContractWrite({
-      address: contracts.BALANCER_20WETH_80LIT as Address,
+      address: contracts.cdx as Address,
       abi: IERC20,
       functionName: "approve",
-      args: [contracts.litDepositor, convertAmountBigNumber],
-      chainId: chain?.id,
-    });
-
-  useEffect(() => {
-    if (convertApproveStatus == "success") {
-      reloadWantAllowance();
-      setIsActive(false);
-    }
-    if (convertApproveStatus == "loading") {
-      setIsActive(true);
-    }
-  }, [convertApproveStatus, reloadWantAllowance]);
-
-  const { writeAsync: convert, status: convertStatus } = useContractWrite({
-    address: contracts.litDepositor as Address,
-    abi: LITDepositor,
-    functionName: "deposit",
-    args: [convertAmountBigNumber, false, ethers.constants.AddressZero],
-    chainId: chain?.id,
-  });
-
-  useEffect(() => {
-    if (convertStatus == "success") {
-      reloadWantBalance();
-      reloadWantAllowance();
-      reloadCdxLITBalance();
-      setIsActive(false);
-    }
-    if (convertStatus == "loading") {
-      setIsActive(true);
-    }
-  }, [
-    convertStatus,
-    reloadCdxLITBalance,
-    reloadWantAllowance,
-    reloadWantBalance,
-  ]);
-
-  const { writeAsync: approveCdxLIT, status: stakeApproveStatus } =
-    useContractWrite({
-      address: contracts.cdxLIT as Address,
-      abi: IERC20,
-      functionName: "approve",
-      args: [contracts.cdxLITRewardPool, stakeAmountBigNumber],
+      args: [contracts.cdxRewardPool, stakeAmountBigNumber],
       chainId: chain?.id,
     });
 
   useEffect(() => {
     if (stakeApproveStatus == "success") {
-      reloadCdxLITAllowance();
+      reloadWantAllowance();
       setIsActive(false);
     }
     if (stakeApproveStatus == "loading") {
       setIsActive(true);
     }
-  }, [stakeApproveStatus, reloadCdxLITAllowance]);
+  }, [stakeApproveStatus, reloadWantAllowance]);
 
   const { writeAsync: stake, status: stakeStatus } = useContractWrite({
-    address: contracts.cdxLITRewardPool as Address,
-    abi: BaseRewardPool,
+    address: contracts.cdxRewardPool as Address,
+    abi: CdxRewardPool,
     functionName: "stake",
     args: [stakeAmountBigNumber],
     chainId: chain?.id,
@@ -170,8 +98,8 @@ export default function CdxStakingTabs() {
 
   useEffect(() => {
     if (stakeStatus == "success") {
-      reloadCdxLITBalance();
-      reloadCdxLITAllowance();
+      reloadWantBalance();
+      reloadWantAllowance();
       reloadStakedBalance();
       setIsActive(false);
     }
@@ -180,14 +108,14 @@ export default function CdxStakingTabs() {
     }
   }, [
     stakeStatus,
-    reloadCdxLITBalance,
-    reloadCdxLITAllowance,
+    reloadWantBalance,
+    reloadWantAllowance,
     reloadStakedBalance,
   ]);
 
   const { writeAsync: unstake, status: unstakeStatus } = useContractWrite({
-    address: contracts.cdxLITRewardPool as Address,
-    abi: BaseRewardPool,
+    address: contracts.cdxRewardPool as Address,
+    abi: CdxRewardPool,
     functionName: "withdraw",
     args: [unstakeAmountBigNumber, false],
     chainId: chain?.id,
@@ -195,14 +123,14 @@ export default function CdxStakingTabs() {
 
   useEffect(() => {
     if (unstakeStatus == "success") {
-      reloadCdxLITBalance();
+      reloadWantBalance();
       reloadStakedBalance();
       setIsActive(false);
     }
     if (unstakeStatus == "loading") {
       setIsActive(true);
     }
-  }, [unstakeStatus, reloadCdxLITBalance, reloadStakedBalance]);
+  }, [unstakeStatus, reloadWantBalance, reloadStakedBalance]);
 
   return (
     <Box className="flex-col grey-card">
@@ -250,12 +178,12 @@ export default function CdxStakingTabs() {
               <Grid container spacing={2}>
                 <Grid item xs={6}>
                   <AmountInput
-                    label="Amount of cdxLIT to stake"
+                    label="Amount of CDX to stake"
                     value={stakeAmount}
                     onChange={(newValue) => {
                       setStakeAmount(newValue);
                     }}
-                    error={stakeAmountBigNumber.gt(cdxLITBalance || 0)}
+                    error={stakeAmountBigNumber.gt(wantBalance || 0)}
                   />
                 </Grid>
                 <Grid item xs={6} className="flex items-center justify-center">
@@ -267,10 +195,10 @@ export default function CdxStakingTabs() {
                         className="w-full"
                         disabled={
                           stakeAmountBigNumber.eq(0) ||
-                          stakeAmountBigNumber.gt(cdxLITBalance || 0) ||
-                          stakeAmountBigNumber.lte(cdxLITAllowance || 0)
+                          stakeAmountBigNumber.gt(wantBalance || 0) ||
+                          stakeAmountBigNumber.lte(wantAllowance || 0)
                         }
-                        onClick={() => approveCdxLIT()}
+                        onClick={() => approveCdx()}
                       >
                         Approve
                       </Button>
@@ -282,8 +210,8 @@ export default function CdxStakingTabs() {
                         className="w-full"
                         disabled={
                           stakeAmountBigNumber.eq(0) ||
-                          stakeAmountBigNumber.gt(cdxLITBalance || 0) ||
-                          stakeAmountBigNumber.gt(cdxLITAllowance || 0)
+                          stakeAmountBigNumber.gt(wantBalance || 0) ||
+                          stakeAmountBigNumber.gt(wantAllowance || 0)
                         }
                         onClick={() => stake()}
                       >
@@ -338,57 +266,29 @@ export default function CdxStakingTabs() {
           <Box className="flex-col">
             <Grid container spacing={2}>
               <Grid item xs={3}>
-                Balancer 20WETH/80LIT token address
+                CDX token address
               </Grid>
               <Grid item xs={9}>
                 <Link
-                  href={getEtherscanLink(contracts.BALANCER_20WETH_80LIT)}
+                  href={getEtherscanLink(contracts.cdx)}
                   target="_blank"
                   rel="noreferrer"
                 >
-                  {contracts.BALANCER_20WETH_80LIT}
+                  {contracts.cdx}
                 </Link>
               </Grid>
             </Grid>
             <Grid container spacing={2}>
               <Grid item xs={3}>
-                cdxLIT token address
+                Staking contract contract
               </Grid>
               <Grid item xs={9}>
                 <Link
-                  href={getEtherscanLink(contracts.cdxLIT)}
+                  href={getEtherscanLink(contracts.cdxRewardPool)}
                   target="_blank"
                   rel="noreferrer"
                 >
-                  {contracts.cdxLIT}
-                </Link>
-              </Grid>
-            </Grid>
-            <Grid container spacing={2}>
-              <Grid item xs={3}>
-                Deposit contract address
-              </Grid>
-              <Grid item xs={9}>
-                <Link
-                  href={getEtherscanLink(contracts.litDepositor)}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  {contracts.litDepositor}
-                </Link>
-              </Grid>
-            </Grid>
-            <Grid container spacing={2}>
-              <Grid item xs={3}>
-                Staking contract address
-              </Grid>
-              <Grid item xs={9}>
-                <Link
-                  href={getEtherscanLink(contracts.cdxLITRewardPool)}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  {contracts.cdxLITRewardPool}
+                  {contracts.cdxRewardPool}
                 </Link>
               </Grid>
             </Grid>
