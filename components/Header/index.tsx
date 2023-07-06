@@ -12,7 +12,7 @@ export default function Header() {
       <Link href="/#">
         <h3 className="text-md pl-8">Claim</h3>
       </Link>
-      <Link href="/#">
+      <Link href="/lock">
         <h3 className="text-md pl-8">Lock CDX</h3>
       </Link>
       <Link href="/#">

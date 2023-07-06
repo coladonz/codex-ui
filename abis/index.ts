@@ -3,3 +3,4 @@ export const BaseRewardPool = require("./BaseRewardPool.json");
 export const CdxRewardPool = require("./CdxRewardPool.json");
 export const LITDepositor = require("./LITDepositor.json");
 export const Booster = require("./Booster.json");
+export const CdxLockerV2 = require("./CdxLockerV2.json");

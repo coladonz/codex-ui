@@ -280,7 +280,7 @@ export default function CdxStakingTabs() {
             </Grid>
             <Grid container spacing={2}>
               <Grid item xs={3}>
-                Staking contract contract
+                CDX Staking contract contract
               </Grid>
               <Grid item xs={9}>
                 <Link
