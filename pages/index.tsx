@@ -1,5 +1,5 @@
-import Home from "@/components/Home";
+import Stake from "./stake";
 
 export default function Index() {
-  return <Home />;
+  return <Stake />;
 }

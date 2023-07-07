@@ -31,7 +31,7 @@ export default function Home(props: {
         <meta name="description" content="Codex" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
-      <div className="z-10 w-full max-w-7xl items-center justify-between font-mono text-sm lg:flex">
+      <div className="z-10 w-full items-center justify-between font-mono text-sm lg:flex">
         <Header />
         <div className="bottom-0 left-0 flex items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black static h-auto w-auto lg:bg-none my-24 lg:my-0">
           <ConnectButton />

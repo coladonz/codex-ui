@@ -58,6 +58,10 @@ export default function CdxLocksView() {
     return [];
   }, [lockData]);
 
+  if (locks.length == 0) {
+    return <></>;
+  }
+
   return (
     <Box className="flex-col">
       <WaitingModal isActive={isActive} setIsActive={setIsActive} />

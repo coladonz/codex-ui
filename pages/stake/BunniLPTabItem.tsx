@@ -210,7 +210,7 @@ export default function BunniLPTabItem({ gauge }: { gauge: GaugeInfo }) {
                       className="flex items-center justify-center"
                     >
                       <Grid container spacing={2}>
-                        <Grid item xs={4}>
+                        <Grid item xs={3}>
                           <Button
                             color="primary"
                             variant="outlined"
@@ -225,7 +225,7 @@ export default function BunniLPTabItem({ gauge }: { gauge: GaugeInfo }) {
                             Approve
                           </Button>
                         </Grid>
-                        <Grid item xs={4}>
+                        <Grid item xs={3}>
                           <Button
                             color="primary"
                             variant="outlined"
@@ -270,7 +270,7 @@ export default function BunniLPTabItem({ gauge }: { gauge: GaugeInfo }) {
                       className="flex items-center justify-center"
                     >
                       <Grid container spacing={2}>
-                        <Grid item xs={4}>
+                        <Grid item xs={3}>
                           <Button
                             color="primary"
                             variant="outlined"
@@ -293,7 +293,7 @@ export default function BunniLPTabItem({ gauge }: { gauge: GaugeInfo }) {
             {index === 2 && (
               <Box className="flex-col">
                 <Grid container spacing={2}>
-                  <Grid item xs={4}>
+                  <Grid item xs={3}>
                     Bunni LP token address
                   </Grid>
                   <Grid item xs={9}>
@@ -307,7 +307,7 @@ export default function BunniLPTabItem({ gauge }: { gauge: GaugeInfo }) {
                   </Grid>
                 </Grid>
                 <Grid container spacing={2}>
-                  <Grid item xs={4}>
+                  <Grid item xs={3}>
                     Bunni LP gauge address
                   </Grid>
                   <Grid item xs={9}>
@@ -321,7 +321,7 @@ export default function BunniLPTabItem({ gauge }: { gauge: GaugeInfo }) {
                   </Grid>
                 </Grid>
                 <Grid container spacing={2}>
-                  <Grid item xs={4}>
+                  <Grid item xs={3}>
                     Deposit contract address
                   </Grid>
                   <Grid item xs={9}>
@@ -335,7 +335,7 @@ export default function BunniLPTabItem({ gauge }: { gauge: GaugeInfo }) {
                   </Grid>
                 </Grid>
                 <Grid container spacing={2}>
-                  <Grid item xs={4}>
+                  <Grid item xs={3}>
                     Codex PID
                   </Grid>
                   <Grid item xs={9}>

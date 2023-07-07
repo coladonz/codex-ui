@@ -188,7 +188,7 @@ export default function CdxStakingTabs() {
                 </Grid>
                 <Grid item xs={6} className="flex items-center justify-center">
                   <Grid container spacing={2}>
-                    <Grid item xs={4}>
+                    <Grid item xs={3}>
                       <Button
                         color="primary"
                         variant="outlined"
@@ -203,7 +203,7 @@ export default function CdxStakingTabs() {
                         Approve
                       </Button>
                     </Grid>
-                    <Grid item xs={4}>
+                    <Grid item xs={3}>
                       <Button
                         color="primary"
                         variant="outlined"
@@ -242,7 +242,7 @@ export default function CdxStakingTabs() {
                 </Grid>
                 <Grid item xs={6} className="flex items-center justify-center">
                   <Grid container spacing={2}>
-                    <Grid item xs={4}>
+                    <Grid item xs={3}>
                       <Button
                         color="primary"
                         variant="outlined"
@@ -265,7 +265,7 @@ export default function CdxStakingTabs() {
         {index === 2 && (
           <Box className="flex-col">
             <Grid container spacing={2}>
-              <Grid item xs={4}>
+              <Grid item xs={3}>
                 CDX token address
               </Grid>
               <Grid item xs={9}>
@@ -279,7 +279,7 @@ export default function CdxStakingTabs() {
               </Grid>
             </Grid>
             <Grid container spacing={2}>
-              <Grid item xs={4}>
+              <Grid item xs={3}>
                 CDX Staking contract contract
               </Grid>
               <Grid item xs={9}>
