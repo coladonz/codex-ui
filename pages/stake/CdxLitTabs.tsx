@@ -263,7 +263,7 @@ export default function CdxLitTabs() {
                 </Grid>
                 <Grid item xs={6} className="flex items-center justify-center">
                   <Grid container spacing={2}>
-                    <Grid item xs={3}>
+                    <Grid item xs={4}>
                       <Button
                         color="primary"
                         variant="outlined"
@@ -278,7 +278,7 @@ export default function CdxLitTabs() {
                         Approve
                       </Button>
                     </Grid>
-                    <Grid item xs={3}>
+                    <Grid item xs={4}>
                       <Button
                         color="primary"
                         variant="outlined"
@@ -311,7 +311,7 @@ export default function CdxLitTabs() {
                 </Grid>
                 <Grid item xs={6} className="flex items-center justify-center">
                   <Grid container spacing={2}>
-                    <Grid item xs={3}>
+                    <Grid item xs={4}>
                       <Button
                         color="primary"
                         variant="outlined"
@@ -326,7 +326,7 @@ export default function CdxLitTabs() {
                         Approve
                       </Button>
                     </Grid>
-                    <Grid item xs={3}>
+                    <Grid item xs={4}>
                       <Button
                         color="primary"
                         variant="outlined"
@@ -365,7 +365,7 @@ export default function CdxLitTabs() {
                 </Grid>
                 <Grid item xs={6} className="flex items-center justify-center">
                   <Grid container spacing={2}>
-                    <Grid item xs={3}>
+                    <Grid item xs={4}>
                       <Button
                         color="primary"
                         variant="outlined"
@@ -388,7 +388,7 @@ export default function CdxLitTabs() {
         {index === 2 && (
           <Box className="flex-col">
             <Grid container spacing={2}>
-              <Grid item xs={3}>
+              <Grid item xs={4}>
                 Balancer 20WETH/80LIT token address
               </Grid>
               <Grid item xs={9}>
@@ -402,7 +402,7 @@ export default function CdxLitTabs() {
               </Grid>
             </Grid>
             <Grid container spacing={2}>
-              <Grid item xs={3}>
+              <Grid item xs={4}>
                 cdxLIT token address
               </Grid>
               <Grid item xs={9}>
@@ -416,7 +416,7 @@ export default function CdxLitTabs() {
               </Grid>
             </Grid>
             <Grid container spacing={2}>
-              <Grid item xs={3}>
+              <Grid item xs={4}>
                 Deposit contract address
               </Grid>
               <Grid item xs={9}>
@@ -430,7 +430,7 @@ export default function CdxLitTabs() {
               </Grid>
             </Grid>
             <Grid container spacing={2}>
-              <Grid item xs={3}>
+              <Grid item xs={4}>
                 Staking contract address
               </Grid>
               <Grid item xs={9}>
