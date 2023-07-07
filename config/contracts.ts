@@ -39,15 +39,15 @@ export const bunniGauges = [
         oLITRewards: '0x1d9ada9F4e1b720F945F303999eE52443F302B82',
         stash: '0x3b21b7B09dd61e8cd9580ef516b3BBB80E8bf19F',
     },
-    {
-        pid: 1,
-        name: "Bunni WETH/swETH 0.9259 ~ 0.9802",
-        gauge: '0xa718193E1348FD4dEF3063E7F4b4154BAAcB0214',
-        bunniLp: '0x846A4566802C27eAC8f72D594F4Ca195Fe41C07a',
-        token: '0x865fe8d74e7C585c57dAcF2A855fDFd0a56db7Cb',
-        oLITRewards: '0x1d9ada9F4e1b720F945F303999eE52443F302B82',
-        stash: '0x3b21b7B09dd61e8cd9580ef516b3BBB80E8bf19F',
-    }
+    // {
+    //     pid: 1,
+    //     name: "Bunni WETH/swETH 0.9259 ~ 0.9802",
+    //     gauge: '0xa718193E1348FD4dEF3063E7F4b4154BAAcB0214',
+    //     bunniLp: '0x846A4566802C27eAC8f72D594F4Ca195Fe41C07a',
+    //     token: '0x865fe8d74e7C585c57dAcF2A855fDFd0a56db7Cb',
+    //     oLITRewards: '0x1d9ada9F4e1b720F945F303999eE52443F302B82',
+    //     stash: '0x3b21b7B09dd61e8cd9580ef516b3BBB80E8bf19F',
+    // }
 ];
 
 export default contracts;

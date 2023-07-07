@@ -33,21 +33,21 @@ export default function BunniLPTabItem({ gauge }: { gauge: GaugeInfo }) {
   );
 
   const { data: wantBalance, refetch: reloadWantBalance } = useContractRead({
-    address: gauge.bunniLp as Address,
+    address: gauge?.bunniLp as Address,
     abi: IERC20,
     functionName: "balanceOf",
     args: [address],
   });
   const { data: depositedBalance, refetch: reloadDepositedBalance } =
     useContractRead({
-      address: gauge.oLITRewards as Address,
+      address: gauge?.oLITRewards as Address,
       abi: IERC20,
       functionName: "balanceOf",
       args: [address],
     });
   const { data: wantAllowance, refetch: reloadWantAllowance } = useContractRead(
     {
-      address: gauge.bunniLp as Address,
+      address: gauge?.bunniLp as Address,
       abi: IERC20,
       functionName: "allowance",
       args: [address, contracts.booster],
@@ -72,7 +72,7 @@ export default function BunniLPTabItem({ gauge }: { gauge: GaugeInfo }) {
 
   const { writeAsync: approveWant, status: depositApproveStatus } =
     useContractWrite({
-      address: gauge.bunniLp as Address,
+      address: gauge?.bunniLp as Address,
       abi: IERC20,
       functionName: "approve",
       args: [contracts.booster, depositAmountBigNumber],
@@ -92,7 +92,7 @@ export default function BunniLPTabItem({ gauge }: { gauge: GaugeInfo }) {
     address: contracts.booster as Address,
     abi: Booster,
     functionName: "deposit",
-    args: [gauge.pid, depositAmountBigNumber, true],
+    args: [gauge?.pid, depositAmountBigNumber, true],
     chainId: chain?.id,
   });
 
@@ -114,7 +114,7 @@ export default function BunniLPTabItem({ gauge }: { gauge: GaugeInfo }) {
   ]);
 
   const { writeAsync: withdraw, status: withdrawStatus } = useContractWrite({
-    address: gauge.oLITRewards as Address,
+    address: gauge?.oLITRewards as Address,
     abi: BaseRewardPool,
     functionName: "withdraw",
     args: [withdrawAmountBigNumber, false],
@@ -146,7 +146,7 @@ export default function BunniLPTabItem({ gauge }: { gauge: GaugeInfo }) {
           setOpenDropdown(!openDropdown);
         }}
       >
-        <h3>{gauge.name}</h3>
+        <h3>{gauge?.name}</h3>
       </Box>
       {openDropdown && (
         <Box className="grey-card">
@@ -310,11 +310,11 @@ export default function BunniLPTabItem({ gauge }: { gauge: GaugeInfo }) {
                   </Grid>
                   <Grid item xs={9}>
                     <Link
-                      href={getEtherscanLink(gauge.bunniLp)}
+                      href={getEtherscanLink(gauge?.bunniLp)}
                       target="_blank"
                       rel="noreferrer"
                     >
-                      {gauge.bunniLp}
+                      {gauge?.bunniLp}
                     </Link>
                   </Grid>
                 </Grid>
@@ -324,11 +324,11 @@ export default function BunniLPTabItem({ gauge }: { gauge: GaugeInfo }) {
                   </Grid>
                   <Grid item xs={9}>
                     <Link
-                      href={getEtherscanLink(gauge.gauge)}
+                      href={getEtherscanLink(gauge?.gauge)}
                       target="_blank"
                       rel="noreferrer"
                     >
-                      {gauge.gauge}
+                      {gauge?.gauge}
                     </Link>
                   </Grid>
                 </Grid>
@@ -351,7 +351,7 @@ export default function BunniLPTabItem({ gauge }: { gauge: GaugeInfo }) {
                     Codex PID
                   </Grid>
                   <Grid item xs={9}>
-                    {gauge.pid}
+                    {gauge?.pid}
                   </Grid>
                 </Grid>
               </Box>
