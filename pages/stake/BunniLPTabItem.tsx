@@ -189,8 +189,8 @@ export default function BunniLPTabItem({ gauge }: { gauge: GaugeInfo }) {
             {index === 0 && (
               <Box className="flex-col">
                 <Box>
-                  Deposit Bunni LP into Codex to earn CDX on top of Bunni's
-                  native rewards
+                  Deposit Bunni LP into Codex to earn CDX on top of Bunni native
+                  rewards
                 </Box>
                 <Box className="mt-4">
                   <Grid container spacing={2}>
@@ -201,7 +201,9 @@ export default function BunniLPTabItem({ gauge }: { gauge: GaugeInfo }) {
                         onChange={(newValue) => {
                           setDepositAmount(newValue);
                         }}
-                        error={depositAmountBigNumber.gt(wantBalance || 0)}
+                        error={depositAmountBigNumber.gt(
+                          (wantBalance as any) || 0
+                        )}
                       />
                     </Grid>
                     <Grid
@@ -217,8 +219,12 @@ export default function BunniLPTabItem({ gauge }: { gauge: GaugeInfo }) {
                             className="w-full"
                             disabled={
                               depositAmountBigNumber.eq(0) ||
-                              depositAmountBigNumber.gt(wantBalance || 0) ||
-                              depositAmountBigNumber.lte(wantAllowance || 0)
+                              depositAmountBigNumber.gt(
+                                (wantBalance as any) || 0
+                              ) ||
+                              depositAmountBigNumber.lte(
+                                (wantAllowance as any) || 0
+                              )
                             }
                             onClick={() => approveWant()}
                           >
@@ -232,8 +238,12 @@ export default function BunniLPTabItem({ gauge }: { gauge: GaugeInfo }) {
                             className="w-full"
                             disabled={
                               depositAmountBigNumber.eq(0) ||
-                              depositAmountBigNumber.gt(wantBalance || 0) ||
-                              depositAmountBigNumber.gt(wantAllowance || 0)
+                              depositAmountBigNumber.gt(
+                                (wantBalance as any) || 0
+                              ) ||
+                              depositAmountBigNumber.gt(
+                                (wantAllowance as any) || 0
+                              )
                             }
                             onClick={() => deposit()}
                           >
@@ -260,7 +270,7 @@ export default function BunniLPTabItem({ gauge }: { gauge: GaugeInfo }) {
                           setWithdrawAmount(newValue);
                         }}
                         error={withdrawAmountBigNumber.gt(
-                          depositedBalance || 0
+                          (depositedBalance as any) || 0
                         )}
                       />
                     </Grid>
@@ -277,7 +287,9 @@ export default function BunniLPTabItem({ gauge }: { gauge: GaugeInfo }) {
                             className="w-full"
                             disabled={
                               withdrawAmountBigNumber.eq(0) ||
-                              withdrawAmountBigNumber.gt(depositedBalance || 0)
+                              withdrawAmountBigNumber.gt(
+                                (depositedBalance as any) || 0
+                              )
                             }
                             onClick={() => withdraw()}
                           >

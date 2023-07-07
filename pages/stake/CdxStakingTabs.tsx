@@ -183,7 +183,7 @@ export default function CdxStakingTabs() {
                     onChange={(newValue) => {
                       setStakeAmount(newValue);
                     }}
-                    error={stakeAmountBigNumber.gt(wantBalance || 0)}
+                    error={stakeAmountBigNumber.gt((wantBalance as any) || 0)}
                   />
                 </Grid>
                 <Grid item xs={6} className="flex items-center justify-center">
@@ -195,8 +195,8 @@ export default function CdxStakingTabs() {
                         className="w-full"
                         disabled={
                           stakeAmountBigNumber.eq(0) ||
-                          stakeAmountBigNumber.gt(wantBalance || 0) ||
-                          stakeAmountBigNumber.lte(wantAllowance || 0)
+                          stakeAmountBigNumber.gt((wantBalance as any) || 0) ||
+                          stakeAmountBigNumber.lte((wantAllowance as any) || 0)
                         }
                         onClick={() => approveCdx()}
                       >
@@ -210,8 +210,8 @@ export default function CdxStakingTabs() {
                         className="w-full"
                         disabled={
                           stakeAmountBigNumber.eq(0) ||
-                          stakeAmountBigNumber.gt(wantBalance || 0) ||
-                          stakeAmountBigNumber.gt(wantAllowance || 0)
+                          stakeAmountBigNumber.gt((wantBalance as any) || 0) ||
+                          stakeAmountBigNumber.gt((wantAllowance as any) || 0)
                         }
                         onClick={() => stake()}
                       >
@@ -237,7 +237,9 @@ export default function CdxStakingTabs() {
                     onChange={(newValue) => {
                       setUnstakeAmount(newValue);
                     }}
-                    error={unstakeAmountBigNumber.gt(stakedBalance || 0)}
+                    error={unstakeAmountBigNumber.gt(
+                      (stakedBalance as any) || 0
+                    )}
                   />
                 </Grid>
                 <Grid item xs={6} className="flex items-center justify-center">
@@ -249,7 +251,7 @@ export default function CdxStakingTabs() {
                         className="w-full"
                         disabled={
                           unstakeAmountBigNumber.eq(0) ||
-                          unstakeAmountBigNumber.gt(stakedBalance || 0)
+                          unstakeAmountBigNumber.gt((stakedBalance as any) || 0)
                         }
                         onClick={() => unstake()}
                       >

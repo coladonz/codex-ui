@@ -133,7 +133,7 @@ export default function CdxLockTabs() {
                     onChange={(newValue) => {
                       setLockAmount(newValue);
                     }}
-                    error={lockAmountBigNumber.gt(wantBalance || 0)}
+                    error={lockAmountBigNumber.gt((wantBalance as any) || 0)}
                   />
                 </Grid>
                 <Grid item xs={6} className="flex items-center justify-center">
@@ -145,8 +145,8 @@ export default function CdxLockTabs() {
                         className="w-full"
                         disabled={
                           lockAmountBigNumber.eq(0) ||
-                          lockAmountBigNumber.gt(wantBalance || 0) ||
-                          lockAmountBigNumber.lte(wantAllowance || 0)
+                          lockAmountBigNumber.gt((wantBalance as any) || 0) ||
+                          lockAmountBigNumber.lte((wantAllowance as any) || 0)
                         }
                         onClick={() => approveCdx()}
                       >
@@ -160,8 +160,8 @@ export default function CdxLockTabs() {
                         className="w-full"
                         disabled={
                           lockAmountBigNumber.eq(0) ||
-                          lockAmountBigNumber.gt(wantBalance || 0) ||
-                          lockAmountBigNumber.gt(wantAllowance || 0)
+                          lockAmountBigNumber.gt((wantBalance as any) || 0) ||
+                          lockAmountBigNumber.gt((wantAllowance as any) || 0)
                         }
                         onClick={() => lock()}
                       >

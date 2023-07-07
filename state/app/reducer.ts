@@ -13,9 +13,10 @@ const initialState: ContractsState = {
 export default createReducer(initialState, (builder) =>
 	builder
 		.addCase(updateUserInfo, (state, action) => {
-			if (action.payload.balances) {
-				Object.keys(action.payload.balances).forEach(tokenAddr => {
-					state.balances[tokenAddr.toLowerCase()] = action.payload.balances[tokenAddr];
+			const balances = action.payload.balances;
+			if (balances) {
+				Object.keys(balances).forEach(tokenAddr => {
+					state.balances[tokenAddr.toLowerCase()] = balances[tokenAddr];
 				})
 			}
 		})

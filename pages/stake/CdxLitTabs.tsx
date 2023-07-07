@@ -258,7 +258,7 @@ export default function CdxLitTabs() {
                     onChange={(newValue) => {
                       setConvertAmount(newValue);
                     }}
-                    error={convertAmountBigNumber.gt(wantBalance || 0)}
+                    error={convertAmountBigNumber.gt((wantBalance as any) || 0)}
                   />
                 </Grid>
                 <Grid item xs={6} className="flex items-center justify-center">
@@ -270,8 +270,12 @@ export default function CdxLitTabs() {
                         className="w-full"
                         disabled={
                           convertAmountBigNumber.eq(0) ||
-                          convertAmountBigNumber.gt(wantBalance || 0) ||
-                          convertAmountBigNumber.lte(wantAllowance || 0)
+                          convertAmountBigNumber.gt(
+                            (wantBalance as any) || 0
+                          ) ||
+                          convertAmountBigNumber.lte(
+                            (wantAllowance as any) || 0
+                          )
                         }
                         onClick={() => approveWant()}
                       >
@@ -285,8 +289,10 @@ export default function CdxLitTabs() {
                         className="w-full"
                         disabled={
                           convertAmountBigNumber.eq(0) ||
-                          convertAmountBigNumber.gt(wantBalance || 0) ||
-                          convertAmountBigNumber.gt(wantAllowance || 0)
+                          convertAmountBigNumber.gt(
+                            (wantBalance as any) || 0
+                          ) ||
+                          convertAmountBigNumber.gt((wantAllowance as any) || 0)
                         }
                         onClick={() => convert()}
                       >
@@ -306,7 +312,7 @@ export default function CdxLitTabs() {
                     onChange={(newValue) => {
                       setStakeAmount(newValue);
                     }}
-                    error={stakeAmountBigNumber.gt(cdxLITBalance || 0)}
+                    error={stakeAmountBigNumber.gt((cdxLITBalance as any) || 0)}
                   />
                 </Grid>
                 <Grid item xs={6} className="flex items-center justify-center">
@@ -318,8 +324,12 @@ export default function CdxLitTabs() {
                         className="w-full"
                         disabled={
                           stakeAmountBigNumber.eq(0) ||
-                          stakeAmountBigNumber.gt(cdxLITBalance || 0) ||
-                          stakeAmountBigNumber.lte(cdxLITAllowance || 0)
+                          stakeAmountBigNumber.gt(
+                            (cdxLITBalance as any) || 0
+                          ) ||
+                          stakeAmountBigNumber.lte(
+                            (cdxLITAllowance as any) || 0
+                          )
                         }
                         onClick={() => approveCdxLIT()}
                       >
@@ -333,8 +343,10 @@ export default function CdxLitTabs() {
                         className="w-full"
                         disabled={
                           stakeAmountBigNumber.eq(0) ||
-                          stakeAmountBigNumber.gt(cdxLITBalance || 0) ||
-                          stakeAmountBigNumber.gt(cdxLITAllowance || 0)
+                          stakeAmountBigNumber.gt(
+                            (cdxLITBalance as any) || 0
+                          ) ||
+                          stakeAmountBigNumber.gt((cdxLITAllowance as any) || 0)
                         }
                         onClick={() => stake()}
                       >
@@ -360,7 +372,9 @@ export default function CdxLitTabs() {
                     onChange={(newValue) => {
                       setUnstakeAmount(newValue);
                     }}
-                    error={unstakeAmountBigNumber.gt(stakedBalance || 0)}
+                    error={unstakeAmountBigNumber.gt(
+                      (stakedBalance as any) || 0
+                    )}
                   />
                 </Grid>
                 <Grid item xs={6} className="flex items-center justify-center">
@@ -372,7 +386,7 @@ export default function CdxLitTabs() {
                         className="w-full"
                         disabled={
                           unstakeAmountBigNumber.eq(0) ||
-                          unstakeAmountBigNumber.gt(stakedBalance || 0)
+                          unstakeAmountBigNumber.gt((stakedBalance as any) || 0)
                         }
                         onClick={() => unstake()}
                       >
