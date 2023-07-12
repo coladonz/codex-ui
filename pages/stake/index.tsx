@@ -1,5 +1,5 @@
-import Home from "@/components/Home";
-import Section from "@/components/Section";
+import Home from "@/components/home";
+import Section from "@/components/section";
 import CdxLitTabs from "./CdxLitTabs";
 import BunniLPTabs from "./BunniLPTabs";
 import CdxStakingTabs from "./CdxStakingTabs";

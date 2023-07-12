@@ -1,6 +1,6 @@
 import { Box, Grid } from "@mui/material";
-import Home from "@/components/Home";
-import Section from "@/components/Section";
+import Home from "@/components/home";
+import Section from "@/components/section";
 import CdxLockTabs from "./CdxLockTabs";
 import CdxLocksView from "./CdxLocksView";
 

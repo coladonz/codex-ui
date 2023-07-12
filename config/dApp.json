@@ -1,0 +1,10 @@
+{
+  "name": "RootHub",
+  "logoSrc": "/logos/Root.svg",
+  "description": "DeFi's Operating System",
+  "keywords": "ROOT, DAO, DeFi, Decentralized, Finance, Flywheel",
+  "logoColors": {
+    "from": "root-red-200",
+    "to": "root-red-300"
+  }
+}

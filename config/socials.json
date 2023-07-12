@@ -1,0 +1,27 @@
+[
+  {
+    "label": "Twitter",
+    "href": "https://twitter.com/Root_Genesis/",
+    "icon": "RxTwitterLogo"
+  },
+  {
+    "label": "Discord",
+    "href": "https://discord.gg/rootdao/",
+    "icon": "RxDiscordLogo"
+  },
+  {
+    "label": "Telegram",
+    "href": "https://t.me/root_announcements/",
+    "icon": "TbBrandTelegram"
+  },
+  {
+    "label": "Substack",
+    "href": "https://rootdao.substack.com/",
+    "icon": "SiSubstack"
+  },
+  {
+    "label": "Gitbook",
+    "href": "https://rootdao.gitbook.io/root/",
+    "icon": "SiGitbook"
+  }
+]

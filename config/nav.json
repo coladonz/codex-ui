@@ -1,0 +1,17 @@
+[
+  {
+    "href": "/stake",
+    "label": "Stake",
+    "icon": "BsStack"
+  },
+  {
+    "href": "/claim",
+    "label": "Claim",
+    "icon": "GiReceiveMoney"
+  },
+  {
+    "href": "/lock",
+    "label": "Lock",
+    "icon": "FaMoneyCheckAlt"
+  }
+]

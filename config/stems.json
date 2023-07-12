@@ -1,0 +1,44 @@
+[
+  {
+    "name": "Atrium",
+    "logoSrc": "/logos/Root.svg",
+    "desc": "Supercharge your workflow and connect the tool you use everyday.",
+    "urls": {
+      "dApp": "https://app.root.credit/",
+      "docs": "https://rootdao.gitbook.io/root/"
+    },
+    "colors": {
+      "from": "#EA3D3D",
+      "to": "#C52E2E"
+    },
+    "categories": [""]
+  },
+  {
+    "name": "Cordyceps",
+    "logoSrc": "/logos/Root.svg",
+    "desc": "Supercharge your workflow and connect the tool you use everyday.",
+    "urls": {
+      "dApp": "https://cordyceps.io/",
+      "docs": "https://cordyceps.gitbook.io/"
+    },
+    "colors": {
+      "from": "#EA7B3D",
+      "to": "#EF7300"
+    },
+    "categories": [""]
+  },
+  {
+    "name": "Torus",
+    "logoSrc": "/logos/Root.svg",
+    "desc": "Supercharge your workflow and connect the tool you use everyday.",
+    "urls": {
+      "dApp": "https://torus.io/",
+      "docs": "https://torus.gitbook.io/"
+    },
+    "colors": {
+      "from": "#3DEA78",
+      "to": "#2EC58E"
+    },
+    "categories": [""]
+  }
+]
