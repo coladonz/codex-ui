@@ -11,6 +11,7 @@ import {
 import { bunniGauges } from "@/config/contracts";
 import BunniLPTabItem from "./BunniLPTabItem";
 import { useState } from "react";
+import CdxStakingTabs from "./CdxStakingTabs";
 
 export default function BunniLPTabs() {
   const [selected, setSelected] = useState(-1);
@@ -88,8 +89,9 @@ export default function BunniLPTabs() {
             </TableBody>
           </Table>
         </Grid>
-        <Grid item md={12} lg={4} className="border border-gray-300 w-[70%]">
+        <Grid item md={12} lg={4} className="w-[70%]">
           {selected !== -1 && <BunniLPTabItem gauge={bunniGauges[selected]} />}
+          <CdxStakingTabs />
         </Grid>
       </Grid>
     </Box>

@@ -15,6 +15,7 @@ import { BigNumber, ethers } from "ethers";
 import { IERC20, CdxRewardPool } from "@/abis";
 import AmountInput from "@/components/inputs/AmountInput";
 import WaitingModal from "@/components/waiting-modal/WaitingModal";
+import CodexTabs from "@/components/01-atoms/tabs/Tabs";
 
 export default function CdxStakingTabs() {
   const { chain } = useNetwork();
@@ -133,52 +134,51 @@ export default function CdxStakingTabs() {
   }, [unstakeStatus, reloadWantBalance, reloadStakedBalance]);
 
   return (
-    <Box className="flex-col grey-card">
+    <Box className="flex-col p-4 border border-gray-300">
       <WaitingModal isActive={isActive} setIsActive={setIsActive} />
-      <Tabs
-        value={index}
-        onChange={(_, newValue) => {
-          setIndex(newValue);
-        }}
-        aria-label="basic tabs example"
-        sx={{
-          boxShadow: "-1px 1px 2px #181818, 1px -1px 2px #1e1e1e",
-        }}
-      >
-        <Tab
-          label="Stake"
-          id="cdxlit-0"
-          value={0}
-          sx={{
-            color: "white !important",
-          }}
-        />
-        <Tab
-          label="UNSTAKE"
-          id="cdxlit-1"
-          value={1}
-          sx={{
-            color: "white !important",
-          }}
-        />
-        <Tab
-          label="INFO"
-          id="cdxlit-2"
-          value={2}
-          sx={{
-            color: "white !important",
-          }}
-        />
-      </Tabs>
-      <Box className="p-4 pt-6">
+      <div className="mb-2">
+        <h1 className="font-bold text-sm">Stake your CDX to earn oLIT</h1>
+      </div>
+      <CodexTabs
+        index={index}
+        setIndex={setIndex}
+        items={["Stake", "Unstake", "info"]}
+      />
+      <Box className="mt-4">
         {index === 0 && (
           <Box className="flex-col">
-            <Box>Stake CDX to earn a portion of the platform’s revenue.</Box>
+            <div className="text-xs mb-1">
+              Stake CDX on Codex to earn a portion of the platform’s revenue,
+              distributed as oLIT tokens.
+            </div>
+            <div className="p-4 rounded-md bg-purple-100">
+              <div className="text-gray-400 text-xs">
+                Note: you can also lock CDX to earn a higher portion of the
+                platform’s revenue and be able to vote on the platform’s
+                periodic decisions. While staked CDX can be withdrawn at any
+                time, locked CDX can only be withdrawn at the end of your lock
+                period.
+              </div>
+            </div>
             <Box className="mt-4">
               <Grid container spacing={2}>
-                <Grid item xs={6}>
+                <Grid item xs={12}>
+                  <Box className="flex justify-between items-center">
+                    <div className="text-gray-400 text-xs mb-1 ">
+                      Amount of CDX to stake
+                    </div>
+                    <div className="flex text-gray-400 text-xs mb-1 ">
+                      Available:{" "}
+                      <span className="text-black text-xs ml-1">
+                        {ethers.utils.formatEther((wantBalance as any) || 0)}
+                      </span>
+                    </div>
+                  </Box>
+                </Grid>
+              </Grid>
+              <Grid container spacing={2}>
+                <Grid item xs={12}>
                   <AmountInput
-                    label="Amount of CDX to stake"
                     value={stakeAmount}
                     onChange={(newValue) => {
                       setStakeAmount(newValue);
@@ -186,9 +186,9 @@ export default function CdxStakingTabs() {
                     error={stakeAmountBigNumber.gt((wantBalance as any) || 0)}
                   />
                 </Grid>
-                <Grid item xs={6} className="flex items-center justify-center">
+                <Grid item xs={12} className="flex items-center justify-center">
                   <Grid container spacing={2}>
-                    <Grid item xs={3}>
+                    <Grid item xs={6}>
                       <Button
                         color="primary"
                         variant="outlined"
@@ -203,7 +203,7 @@ export default function CdxStakingTabs() {
                         Approve
                       </Button>
                     </Grid>
-                    <Grid item xs={3}>
+                    <Grid item xs={6}>
                       <Button
                         color="primary"
                         variant="outlined"
@@ -215,7 +215,7 @@ export default function CdxStakingTabs() {
                         }
                         onClick={() => stake()}
                       >
-                        Stake
+                        Stake CDX
                       </Button>
                     </Grid>
                   </Grid>
@@ -227,12 +227,26 @@ export default function CdxStakingTabs() {
 
         {index === 1 && (
           <Box className="flex-col">
-            <Box>Unstake CDX.</Box>
+            <div className="text-xs">Unstake CDX from Codex.</div>
             <Box className="mt-4">
               <Grid container spacing={2}>
-                <Grid item xs={6}>
+                <Grid item xs={12}>
+                  <Box className="flex justify-between items-center">
+                    <div className="text-gray-400 text-xs mb-1 ">
+                      Amount of LP to usntake
+                    </div>
+                    <div className="flex text-gray-400 text-xs mb-1 ">
+                      Available:{" "}
+                      <span className="text-black text-xs ml-1">
+                        {ethers.utils.formatEther((stakedBalance as any) || 0)}
+                      </span>
+                    </div>
+                  </Box>
+                </Grid>
+              </Grid>
+              <Grid container spacing={2}>
+                <Grid item xs={12}>
                   <AmountInput
-                    label="Amount of cdxLIT to unstake"
                     value={unstakeAmount}
                     onChange={(newValue) => {
                       setUnstakeAmount(newValue);
@@ -242,9 +256,9 @@ export default function CdxStakingTabs() {
                     )}
                   />
                 </Grid>
-                <Grid item xs={6} className="flex items-center justify-center">
+                <Grid item xs={12} className="flex items-center justify-center">
                   <Grid container spacing={2}>
-                    <Grid item xs={3}>
+                    <Grid item xs={12}>
                       <Button
                         color="primary"
                         variant="outlined"
@@ -266,11 +280,11 @@ export default function CdxStakingTabs() {
         )}
         {index === 2 && (
           <Box className="flex-col">
-            <Grid container spacing={2}>
-              <Grid item xs={3}>
+            <Grid container spacing={0} className="mb-4 text-xs">
+              <Grid item xs={12}>
                 CDX token address
               </Grid>
-              <Grid item xs={9}>
+              <Grid item xs={12}>
                 <Link
                   href={getEtherscanLink(contracts.cdx)}
                   target="_blank"
@@ -280,11 +294,11 @@ export default function CdxStakingTabs() {
                 </Link>
               </Grid>
             </Grid>
-            <Grid container spacing={2}>
-              <Grid item xs={3}>
+            <Grid container spacing={0} className="mb-4 text-xs">
+              <Grid item xs={12}>
                 CDX Staking contract contract
               </Grid>
-              <Grid item xs={9}>
+              <Grid item xs={12}>
                 <Link
                   href={getEtherscanLink(contracts.cdxRewardPool)}
                   target="_blank"

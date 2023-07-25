@@ -132,7 +132,7 @@ export default function BunniLPTabItem({ gauge }: { gauge: GaugeInfo }) {
   }, [withdrawStatus, reloadDepositedBalance]);
 
   return (
-    <Box className="flex-col m-4">
+    <Box className="flex-col p-4 border border-gray-300">
       <WaitingModal isActive={isActive} setIsActive={setIsActive} />
       <div className="mb-2">
         <h1 className="font-bold text-sm">Stake {gauge.name}</h1>

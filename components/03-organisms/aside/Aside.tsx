@@ -63,7 +63,7 @@ const Aside = () => {
   return (
     <aside
       aria-label="Sidebar"
-      className="font-light flex flex-col justify-between fixed top-0 left-0 z-40 w-64 px-3 py-4 overflow-y-auto h-screen bg-daytime-200 dark:bg-inherit text-midnight-200 dark:text-gray-500 transition-transform -translate-x-full sm:translate-x-0 select-none border-r border-gray-200 dark:border-gray-400 dark:border-opacity-25"
+      className="font-light flex flex-col justify-between fixed top-0 left-0 z-40 w-64 px-3 py-4 overflow-y-auto overflow-x-hidden h-screen bg-daytime-200 dark:bg-inherit text-midnight-200 dark:text-gray-500 transition-transform -translate-x-full sm:translate-x-0 select-none border-r border-gray-200 dark:border-gray-400 dark:border-opacity-25"
       style={{
         background: "#0A0A0C",
         color: "#9EA1A8",
@@ -80,7 +80,13 @@ const Aside = () => {
           </h1>
         </div>
 
-        <div>
+        <div
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+          }}
+        >
           {gradient()}
         </div>
 
