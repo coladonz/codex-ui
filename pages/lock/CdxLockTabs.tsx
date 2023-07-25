@@ -128,7 +128,7 @@ export default function CdxLockTabs() {
               <Grid container spacing={2}>
                 <Grid item xs={6}>
                   <AmountInput
-                    label="Amount of CDX to lock"
+                    // label="Amount of CDX to lock"
                     value={lockAmount}
                     onChange={(newValue) => {
                       setLockAmount(newValue);
