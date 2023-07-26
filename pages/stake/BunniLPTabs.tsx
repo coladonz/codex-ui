@@ -78,7 +78,7 @@ export default function BunniLPTabs() {
                   <TableCell align="right">
                     <Button
                       variant="text"
-                      className=" codex-button-secondary"
+                      className="codex-button-secondary"
                       onClick={() => setSelected(index)}
                     >
                       {index === selected ? "+ Farming" : "+ Farm"}

@@ -190,9 +190,8 @@ export default function CdxStakingTabs() {
                   <Grid container spacing={2}>
                     <Grid item xs={6}>
                       <Button
-                        color="primary"
-                        variant="outlined"
-                        className="w-full"
+                        variant="contained"
+                        className="w-full codex-button"
                         disabled={
                           stakeAmountBigNumber.eq(0) ||
                           stakeAmountBigNumber.gt((wantBalance as any) || 0) ||
@@ -205,9 +204,8 @@ export default function CdxStakingTabs() {
                     </Grid>
                     <Grid item xs={6}>
                       <Button
-                        color="primary"
-                        variant="outlined"
-                        className="w-full"
+                        variant="contained"
+                        className="w-full codex-button"
                         disabled={
                           stakeAmountBigNumber.eq(0) ||
                           stakeAmountBigNumber.gt((wantBalance as any) || 0) ||
@@ -260,9 +258,8 @@ export default function CdxStakingTabs() {
                   <Grid container spacing={2}>
                     <Grid item xs={12}>
                       <Button
-                        color="primary"
-                        variant="outlined"
-                        className="w-full"
+                        variant="contained"
+                        className="w-full codex-button"
                         disabled={
                           unstakeAmountBigNumber.eq(0) ||
                           unstakeAmountBigNumber.gt((stakedBalance as any) || 0)

@@ -49,6 +49,7 @@ body {
 .codex-button {
   background: linear-gradient(180deg, #18181c 0%, #0a0a0c 100%) !important;
   color: white !important;
+  font-size: 12px !important;
 }
 
 .codex-button:disabled {

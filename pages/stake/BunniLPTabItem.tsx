@@ -183,9 +183,8 @@ export default function BunniLPTabItem({ gauge }: { gauge: GaugeInfo }) {
                   <Grid container spacing={2}>
                     <Grid item xs={6}>
                       <Button
-                        color="primary"
-                        variant="outlined"
-                        className="w-full"
+                        variant="contained"
+                        className="w-full codex-button"
                         disabled={
                           depositAmountBigNumber.eq(0) ||
                           depositAmountBigNumber.gt(
@@ -202,9 +201,8 @@ export default function BunniLPTabItem({ gauge }: { gauge: GaugeInfo }) {
                     </Grid>
                     <Grid item xs={6}>
                       <Button
-                        color="primary"
-                        variant="outlined"
-                        className="w-full"
+                        variant="contained"
+                        className="w-full codex-button"
                         disabled={
                           depositAmountBigNumber.eq(0) ||
                           depositAmountBigNumber.gt(
@@ -261,9 +259,8 @@ export default function BunniLPTabItem({ gauge }: { gauge: GaugeInfo }) {
                   <Grid container spacing={2}>
                     <Grid item xs={12}>
                       <Button
-                        color="primary"
-                        variant="outlined"
-                        className="w-full"
+                        variant="contained"
+                        className="w-full codex-button"
                         disabled={
                           withdrawAmountBigNumber.eq(0) ||
                           withdrawAmountBigNumber.gt(
@@ -327,7 +324,7 @@ export default function BunniLPTabItem({ gauge }: { gauge: GaugeInfo }) {
             </Grid>
             <Grid container spacing={0} className="mb-4 text-xs">
               <Grid item xs={12}>
-                Codex PID:  {gauge?.pid}
+                Codex PID: {gauge?.pid}
               </Grid>
             </Grid>
           </Box>
