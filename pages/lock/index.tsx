@@ -16,7 +16,7 @@ export default function Lock() {
           <div className="flex justify-between mb-6">
             <div>
               <h1 className="font-bold text-2xl">CDX Lock</h1>
-              <span className="text-gray-400">
+              <span className="text-gray-400 text-xs">
                 CDX holders can lock their CDX to vote for the gauge weight.
               </span>
             </div>
