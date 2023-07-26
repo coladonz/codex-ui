@@ -72,12 +72,6 @@ const Aside = () => {
       <div>
         <div className="flex items-center p-2">
           <Logo src="/logos/codex.png" />
-          <h1
-            className="text-xl ml-2"
-            style={{ fontWeight: "bold", color: "#2f1449" }}
-          >
-            Codex
-          </h1>
         </div>
 
         <div
@@ -85,6 +79,7 @@ const Aside = () => {
             position: "absolute",
             top: 0,
             left: 0,
+            zIndex: -1,
           }}
         >
           {gradient()}

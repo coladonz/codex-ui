@@ -4,6 +4,7 @@ const CodexTabs = ({
   items,
   index,
   setIndex,
+  ...others
 }: {
   items: string[];
   index: number;
@@ -22,6 +23,7 @@ const CodexTabs = ({
         },
       }}
       aria-label="basic tabs example"
+      {...others}
     >
       {items.map((item, value) => {
         return (
