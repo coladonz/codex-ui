@@ -1,7 +1,7 @@
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import { useEffect, useMemo, useState } from "react";
-import { Box, Button, Grid, Link, Typography } from "@mui/material";
+import { Box, Button, Grid, Link, div } from "@mui/material";
 import { formatDateTimeString, getEtherscanLink } from "@/utils";
 import contracts from "@/config/contracts";
 import {
@@ -59,73 +59,95 @@ export default function CdxLocksView() {
   }, [lockData]);
 
   return (
-    <Box className="flex-col">
+    <Box className="flex-col p-4 border border-gray-300">
       <WaitingModal isActive={isActive} setIsActive={setIsActive} />
-      <Box className="flex flex-col mb-10 card-header bg-zinc-800/30">
-        <Box className="p-4 w-full">Your current CDX locks</Box>
-        <Box className="grey-card">
-          <Box sx={{ borderBottom: "1px solid #1c1c1c" }}>
-            <Grid container spacing={2}>
-              <Grid item xs={1}>
-                <Typography className="p-4 flex justify-center">▴</Typography>
-              </Grid>
-              <Grid item xs={3}>
-                <Typography className="p-4">Locked amount</Typography>
-              </Grid>
-              <Grid item xs={3}>
-                <Typography className="p-4">Boosted amount</Typography>
-              </Grid>
-              <Grid item xs={3}>
-                <Typography className="p-4">Unlock At</Typography>
-              </Grid>
-            </Grid>
-          </Box>
-          <Box>
-            {locks.map((lock, index) => {
-              return (
-                <Grid container spacing={2} key={lock.unlockTime}>
-                  <Grid item xs={1}>
-                    <Typography className="p-4 flex justify-center">
-                      {index + 1}
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={3}>
-                    <Typography className="p-4">
-                      {formatEther(lock.amount)} CDX
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={3}>
-                    <Typography className="p-4">
-                      {formatEther(lock.boosted)} vlCDX
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={3}>
-                    <Typography className="p-4">
-                      {formatDateTimeString(
-                        new Date(lock.unlockTime * 1000),
-                        true
-                      )}
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={2}>
-                    <Typography className="p-4">
-                      <Button
-                        color="primary"
-                        variant="outlined"
-                        className="w-full"
-                        disabled={new Date().getTime() < lock.unlockTime * 1000}
-                        onClick={() => unlock()}
-                      >
-                        Unlock
-                      </Button>
-                    </Typography>
-                  </Grid>
+      <div className="mb-2">
+        <h1 className="font-bold text-sm">Your current CDX locks</h1>
+      </div>
+      {locks.length == 0 ? (
+        <div>
+          <div className="text-gray-400 text-xs">
+            You have no CDX locks, Lock CDX on this page to get started.
+          </div>
+          <Button
+            variant="contained"
+            className="w-full codex-button"
+            onClick={() => {}}
+          >
+            Go to vote page
+          </Button>
+        </div>
+      ) : (
+        <Box className="flex flex-col mb-10">
+          <Box className="text-[12px]">
+            <Box sx={{ borderBottom: "1px solid #1c1c1c" }}>
+              <Grid container spacing={2} className="items-center">
+                <Grid item xs={1}>
+                  <div className="p-4 flex justify-center">▴</div>
                 </Grid>
-              );
-            })}
+                <Grid item xs={3}>
+                  <div className="p-2">Locked</div>
+                </Grid>
+                <Grid item xs={4}>
+                  <div className="p-2">Unlock At</div>
+                </Grid>
+              </Grid>
+            </Box>
+            <Box>
+              {locks.map((lock, index) => {
+                return (
+                  <Grid
+                    container
+                    spacing={2}
+                    key={lock.unlockTime}
+                    className="items-center"
+                  >
+                    <Grid item xs={1}>
+                      <div className="p-4 flex justify-center">{index + 1}</div>
+                    </Grid>
+                    <Grid item xs={3}>
+                      <div className="p-2">{formatEther(lock.amount)} CDX</div>
+                    </Grid>
+                    <Grid item xs={4}>
+                      <div className="p-2">
+                        {formatDateTimeString(
+                          new Date(lock.unlockTime * 1000),
+                          true
+                        )}
+                      </div>
+                    </Grid>
+                    <Grid item xs={4}>
+                      <div className="p-2">
+                        <Button
+                          variant="contained"
+                          className="w-full codex-button"
+                          disabled={
+                            new Date().getTime() < lock.unlockTime * 1000
+                          }
+                          onClick={() => unlock()}
+                        >
+                          Unlock
+                        </Button>
+                      </div>
+                    </Grid>
+                  </Grid>
+                );
+              })}
+            </Box>
           </Box>
         </Box>
-      </Box>
+      )}
+      <div>
+        <span className="text-gray-400 text-xs">Current vote weight: </span>
+        <span>
+          {formatEther(
+            locks.reduce((acc, cur) => {
+              return acc + Number(cur.boosted);
+            }, 0) as any
+          )}{" "}
+          vlCDX
+        </span>
+      </div>
     </Box>
   );
 }
