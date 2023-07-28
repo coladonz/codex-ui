@@ -41,7 +41,7 @@ export const bunniGauges = [
     },
     {
         pid: 1,
-        name: "Bunni WETH/swETH 0.9259 ~ 0.9802",
+        name: "Bunni WETH/swETH 0.8 ~ 0.8",
         gauge: '0xa718193E1348FD4dEF3063E7F4b4154BAAcB0214',
         bunniLp: '0x846A4566802C27eAC8f72D594F4Ca195Fe41C07a',
         token: '0x865fe8d74e7C585c57dAcF2A855fDFd0a56db7Cb',

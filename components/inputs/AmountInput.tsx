@@ -49,16 +49,16 @@ const AmountInput = (props: Props) => {
           <Typography
             className="text-purple-500 text-sm cursor-pointer"
             onClick={() => {
-              props.onChange(props.max || '0');
+              props.onChange(props.max || "0");
             }}
           >
             Max
           </Typography>
         ) : null,
+        autoComplete: undefined,
       }}
       fullWidth
       placeholder="0"
-      focused
       color="info"
       value={props.value}
       onChange={(event) => {

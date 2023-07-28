@@ -150,7 +150,7 @@ export default function CdxLocksView() {
         )}
         <div>
           <span className="text-gray-400 text-xs">Current vote weight: </span>
-          <span>{formatEther(votingPower)} vlCDX</span>
+          <span>{Number(votingPower) / 1e18} vlCDX</span>
         </div>
       </Box>
 
@@ -167,7 +167,7 @@ export default function CdxLocksView() {
                   <div className="flex text-gray-400 text-xs mb-1 ">
                     Available:{" "}
                     <span className="text-black text-xs ml-1">
-                      {formatEther(votingPower)}
+                      {Number(votingPower) / 1e18}
                     </span>
                   </div>
                 </Box>

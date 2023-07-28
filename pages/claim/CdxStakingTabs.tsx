@@ -1,156 +1,163 @@
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import { useEffect, useState } from "react";
-import { Box, Button, Grid, Link, Typography } from "@mui/material";
+import { Box, Button, Grid, Link } from "@mui/material";
 import { getEtherscanLink } from "@/utils";
-import contracts, { GaugeInfo } from "@/config/contracts";
+import contracts from "@/config/contracts";
 import {
   Address,
   useAccount,
   useContractRead,
   useContractWrite,
   useNetwork,
-  useWaitForTransaction,
 } from "wagmi";
 import { BigNumber, ethers } from "ethers";
-import { IERC20, BaseRewardPool, Booster } from "@/abis";
+import { IERC20, CdxRewardPool } from "@/abis";
 import AmountInput from "@/components/inputs/AmountInput";
 import WaitingModal from "@/components/waiting-modal/WaitingModal";
 import CodexTabs from "@/components/01-atoms/tabs/Tabs";
 
-export default function BunniLPTabItem({ gauge }: { gauge: GaugeInfo }) {
+export default function CdxStakingTabs() {
   const { chain } = useNetwork();
   const { address } = useAccount();
   const [isActive, setIsActive] = useState(false);
   const [index, setIndex] = useState(0);
-  const [depositAmount, setDepositAmount] = useState("0");
-  const [withdrawAmount, setWithdrawAmount] = useState("0");
-  const [depositAmountBigNumber, setDepositAmountBigNumber] = useState(
+  const [stakeAmount, setStakeAmount] = useState("0");
+  const [unstakeAmount, setUnstakeAmount] = useState("0");
+  const [stakeAmountBigNumber, setStakeAmountBigNumber] = useState(
     BigNumber.from("0")
   );
-  const [withdrawAmountBigNumber, setWithdrawAmountBigNumber] = useState(
+  const [unstakeAmountBigNumber, setUnstakeAmountBigNumber] = useState(
     BigNumber.from("0")
   );
 
   const { data: wantBalance, refetch: reloadWantBalance } = useContractRead({
-    address: gauge?.bunniLp as Address,
+    address: contracts.cdx as Address,
     abi: IERC20,
     functionName: "balanceOf",
     args: [address],
   });
-  const { data: depositedBalance, refetch: reloadDepositedBalance } =
-    useContractRead({
-      address: gauge?.oLITRewards as Address,
-      abi: IERC20,
-      functionName: "balanceOf",
-      args: [address],
-    });
   const { data: wantAllowance, refetch: reloadWantAllowance } = useContractRead(
     {
-      address: gauge?.bunniLp as Address,
+      address: contracts.cdx as Address,
       abi: IERC20,
       functionName: "allowance",
-      args: [address, contracts.booster],
+      args: [address, contracts.cdxRewardPool],
+    }
+  );
+  const { data: stakedBalance, refetch: reloadStakedBalance } = useContractRead(
+    {
+      address: contracts.cdxRewardPool as Address,
+      abi: CdxRewardPool,
+      functionName: "balanceOf",
+      args: [address],
     }
   );
 
   useEffect(() => {
     let amount = BigNumber.from(0);
     try {
-      amount = ethers.utils.parseEther(depositAmount);
+      amount = ethers.utils.parseEther(stakeAmount);
     } catch {}
-    setDepositAmountBigNumber(amount);
-  }, [depositAmount]);
+    setStakeAmountBigNumber(amount);
+  }, [stakeAmount]);
 
   useEffect(() => {
     let amount = BigNumber.from(0);
     try {
-      amount = ethers.utils.parseEther(withdrawAmount);
+      amount = ethers.utils.parseEther(unstakeAmount);
     } catch {}
-    setWithdrawAmountBigNumber(amount);
-  }, [withdrawAmount]);
+    setUnstakeAmountBigNumber(amount);
+  }, [unstakeAmount]);
 
-  const { writeAsync: approveWant, status: depositApproveStatus } =
+  const { writeAsync: approveCdx, status: stakeApproveStatus } =
     useContractWrite({
-      address: gauge?.bunniLp as Address,
+      address: contracts.cdx as Address,
       abi: IERC20,
       functionName: "approve",
-      args: [contracts.booster, depositAmountBigNumber],
+      args: [contracts.cdxRewardPool, stakeAmountBigNumber],
       chainId: chain?.id,
     });
 
   useEffect(() => {
-    if (depositApproveStatus == "success") {
+    if (stakeApproveStatus == "success") {
       reloadWantAllowance();
       setIsActive(false);
-    } else if (depositApproveStatus == "loading") {
+    }
+    if (stakeApproveStatus == "loading") {
       setIsActive(true);
     }
-  }, [depositApproveStatus, reloadWantAllowance]);
+  }, [stakeApproveStatus, reloadWantAllowance]);
 
-  const { writeAsync: deposit, status: depositStatus } = useContractWrite({
-    address: contracts.booster as Address,
-    abi: Booster,
-    functionName: "deposit",
-    args: [gauge?.pid, depositAmountBigNumber, true],
+  const { writeAsync: stake, status: stakeStatus } = useContractWrite({
+    address: contracts.cdxRewardPool as Address,
+    abi: CdxRewardPool,
+    functionName: "stake",
+    args: [stakeAmountBigNumber],
     chainId: chain?.id,
   });
 
   useEffect(() => {
-    if (depositStatus == "success") {
+    if (stakeStatus == "success") {
       reloadWantBalance();
       reloadWantAllowance();
-      reloadDepositedBalance();
+      reloadStakedBalance();
       setIsActive(false);
     }
-    if (depositStatus == "loading") {
+    if (stakeStatus == "loading") {
       setIsActive(true);
     }
   }, [
-    depositStatus,
-    reloadDepositedBalance,
-    reloadWantAllowance,
+    stakeStatus,
     reloadWantBalance,
+    reloadWantAllowance,
+    reloadStakedBalance,
   ]);
 
-  const { writeAsync: withdraw, status: withdrawStatus } = useContractWrite({
-    address: gauge?.oLITRewards as Address,
-    abi: BaseRewardPool,
-    functionName: "withdrawAndUnwrap",
-    args: [withdrawAmountBigNumber, false],
+  const { writeAsync: unstake, status: unstakeStatus } = useContractWrite({
+    address: contracts.cdxRewardPool as Address,
+    abi: CdxRewardPool,
+    functionName: "withdraw",
+    args: [unstakeAmountBigNumber, false],
     chainId: chain?.id,
   });
 
   useEffect(() => {
-    if (withdrawStatus == "success") {
-      reloadDepositedBalance();
+    if (unstakeStatus == "success") {
+      reloadWantBalance();
+      reloadStakedBalance();
       setIsActive(false);
     }
-    if (withdrawStatus == "loading") {
+    if (unstakeStatus == "loading") {
       setIsActive(true);
     }
-  }, [withdrawStatus, reloadDepositedBalance]);
+  }, [unstakeStatus, reloadWantBalance, reloadStakedBalance]);
 
   return (
     <Box className="flex-col p-4 border border-gray-300">
       <WaitingModal isActive={isActive} setIsActive={setIsActive} />
       <div className="mb-2">
-        <h1 className="font-bold text-sm">Stake {gauge.name}</h1>
+        <h1 className="font-bold text-sm">Stake your CDX to earn oLIT</h1>
       </div>
       <CodexTabs
         index={index}
         setIndex={setIndex}
-        items={["Deposit", "Withdraw", "info"]}
+        items={["Stake", "Unstake", "info"]}
       />
       <Box className="mt-4">
         {index === 0 && (
           <Box className="flex-col">
+            <div className="text-xs mb-1">
+              Stake CDX on Codex to earn a portion of the platform’s revenue,
+              distributed as oLIT tokens.
+            </div>
             <div className="p-4 rounded-md bg-purple-100">
-              <div className="text-xs">Earn more! on Codex vault</div>
               <div className="text-gray-400 text-xs">
-                Deposit liquidity into the Codex pool (without staking in the
-                Bunni gauge), and then stake your LP tokens here to earn CDX on
-                top of Bunni’s native rewards.
+                Note: you can also lock CDX to earn a higher portion of the
+                platform’s revenue and be able to vote on the platform’s
+                periodic decisions. While staked CDX can be withdrawn at any
+                time, locked CDX can only be withdrawn at the end of your lock
+                period.
               </div>
             </div>
             <Box className="mt-4">
@@ -158,7 +165,7 @@ export default function BunniLPTabItem({ gauge }: { gauge: GaugeInfo }) {
                 <Grid item xs={12}>
                   <Box className="flex justify-between items-center">
                     <div className="text-gray-400 text-xs mb-1 ">
-                      Amount of LP to deposit
+                      Amount of CDX to stake
                     </div>
                     <div className="flex text-gray-400 text-xs mb-1 ">
                       Available:{" "}
@@ -172,11 +179,11 @@ export default function BunniLPTabItem({ gauge }: { gauge: GaugeInfo }) {
               <Grid container spacing={2}>
                 <Grid item xs={12}>
                   <AmountInput
-                    value={depositAmount}
+                    value={stakeAmount}
                     onChange={(newValue) => {
-                      setDepositAmount(newValue);
+                      setStakeAmount(newValue);
                     }}
-                    error={depositAmountBigNumber.gt((wantBalance as any) || 0)}
+                    error={stakeAmountBigNumber.gt((wantBalance as any) || 0)}
                   />
                 </Grid>
                 <Grid item xs={12} className="flex items-center justify-center">
@@ -186,15 +193,11 @@ export default function BunniLPTabItem({ gauge }: { gauge: GaugeInfo }) {
                         variant="contained"
                         className="w-full codex-button"
                         disabled={
-                          depositAmountBigNumber.eq(0) ||
-                          depositAmountBigNumber.gt(
-                            (wantBalance as any) || 0
-                          ) ||
-                          depositAmountBigNumber.lte(
-                            (wantAllowance as any) || 0
-                          )
+                          stakeAmountBigNumber.eq(0) ||
+                          stakeAmountBigNumber.gt((wantBalance as any) || 0) ||
+                          stakeAmountBigNumber.lte((wantAllowance as any) || 0)
                         }
-                        onClick={() => approveWant()}
+                        onClick={() => approveCdx()}
                       >
                         Approve
                       </Button>
@@ -204,15 +207,13 @@ export default function BunniLPTabItem({ gauge }: { gauge: GaugeInfo }) {
                         variant="contained"
                         className="w-full codex-button"
                         disabled={
-                          depositAmountBigNumber.eq(0) ||
-                          depositAmountBigNumber.gt(
-                            (wantBalance as any) || 0
-                          ) ||
-                          depositAmountBigNumber.gt((wantAllowance as any) || 0)
+                          stakeAmountBigNumber.eq(0) ||
+                          stakeAmountBigNumber.gt((wantBalance as any) || 0) ||
+                          stakeAmountBigNumber.gt((wantAllowance as any) || 0)
                         }
-                        onClick={() => deposit()}
+                        onClick={() => stake()}
                       >
-                        Deposit
+                        Stake CDX
                       </Button>
                     </Grid>
                   </Grid>
@@ -224,20 +225,18 @@ export default function BunniLPTabItem({ gauge }: { gauge: GaugeInfo }) {
 
         {index === 1 && (
           <Box className="flex-col">
-            <div className="text-xs">Withdraw liquidity from codex vault</div>
+            <div className="text-xs">Unstake CDX from Codex.</div>
             <Box className="mt-4">
               <Grid container spacing={2}>
                 <Grid item xs={12}>
                   <Box className="flex justify-between items-center">
                     <div className="text-gray-400 text-xs mb-1 ">
-                      Amount of LP to withdraw
+                      Amount of LP to usntake
                     </div>
                     <div className="flex text-gray-400 text-xs mb-1 ">
                       Available:{" "}
                       <span className="text-black text-xs ml-1">
-                        {ethers.utils.formatEther(
-                          (depositedBalance as any) || 0
-                        )}
+                        {ethers.utils.formatEther((stakedBalance as any) || 0)}
                       </span>
                     </div>
                   </Box>
@@ -246,12 +245,12 @@ export default function BunniLPTabItem({ gauge }: { gauge: GaugeInfo }) {
               <Grid container spacing={2}>
                 <Grid item xs={12}>
                   <AmountInput
-                    value={withdrawAmount}
+                    value={unstakeAmount}
                     onChange={(newValue) => {
-                      setWithdrawAmount(newValue);
+                      setUnstakeAmount(newValue);
                     }}
-                    error={withdrawAmountBigNumber.gt(
-                      (depositedBalance as any) || 0
+                    error={unstakeAmountBigNumber.gt(
+                      (stakedBalance as any) || 0
                     )}
                   />
                 </Grid>
@@ -262,14 +261,12 @@ export default function BunniLPTabItem({ gauge }: { gauge: GaugeInfo }) {
                         variant="contained"
                         className="w-full codex-button"
                         disabled={
-                          withdrawAmountBigNumber.eq(0) ||
-                          withdrawAmountBigNumber.gt(
-                            (depositedBalance as any) || 0
-                          )
+                          unstakeAmountBigNumber.eq(0) ||
+                          unstakeAmountBigNumber.gt((stakedBalance as any) || 0)
                         }
-                        onClick={() => withdraw()}
+                        onClick={() => unstake()}
                       >
-                        Withdraw
+                        Unstake
                       </Button>
                     </Grid>
                   </Grid>
@@ -282,49 +279,30 @@ export default function BunniLPTabItem({ gauge }: { gauge: GaugeInfo }) {
           <Box className="flex-col">
             <Grid container spacing={0} className="mb-4 text-xs">
               <Grid item xs={12}>
-                Bunni LP token address:
+                CDX token address
               </Grid>
               <Grid item xs={12}>
                 <Link
-                  href={getEtherscanLink(gauge?.bunniLp)}
+                  href={getEtherscanLink(contracts.cdx)}
                   target="_blank"
                   rel="noreferrer"
                 >
-                  {gauge?.bunniLp}
+                  {contracts.cdx}
                 </Link>
               </Grid>
             </Grid>
             <Grid container spacing={0} className="mb-4 text-xs">
               <Grid item xs={12}>
-                Bunni LP gauge address:
+                CDX Staking contract contract
               </Grid>
               <Grid item xs={12}>
                 <Link
-                  href={getEtherscanLink(gauge?.gauge)}
+                  href={getEtherscanLink(contracts.cdxRewardPool)}
                   target="_blank"
                   rel="noreferrer"
                 >
-                  {gauge?.gauge}
+                  {contracts.cdxRewardPool}
                 </Link>
-              </Grid>
-            </Grid>
-            <Grid container spacing={0} className="mb-4 text-xs">
-              <Grid item xs={12}>
-                Deposit contract address:
-              </Grid>
-              <Grid item xs={12}>
-                <Link
-                  href={getEtherscanLink(contracts.booster)}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  {contracts.booster}
-                </Link>
-              </Grid>
-            </Grid>
-            <Grid container spacing={0} className="mb-4 text-xs">
-              <Grid item xs={12}>
-                Codex PID: {gauge?.pid}
               </Grid>
             </Grid>
           </Box>

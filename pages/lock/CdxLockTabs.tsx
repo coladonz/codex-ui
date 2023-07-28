@@ -95,11 +95,11 @@ export default function CdxLockTabs() {
         <Box className="flex">
           <Box className="flex-col mr-4">
             <div className="text-gray-400 text-xs">Claimable(USD value)</div>
-            <div className="text-sm">$1,199,958</div>
+            <div className="text-sm">$ -</div>
           </Box>
           <Box className="flex-col mr-4">
             <div className="text-gray-400 text-xs">vAPR</div>
-            <div className="text-sm">0%</div>
+            <div className="text-sm">- %</div>
           </Box>
           <Box className="flex-col mr-4">
             <div className="text-gray-400 text-xs">My CDX Locked</div>
@@ -107,7 +107,7 @@ export default function CdxLockTabs() {
           </Box>
           <Box className="flex-col mr-4">
             <div className="text-gray-400 text-xs">Total Locked</div>
-            <div className="text-sm">$159.1m</div>
+            <div className="text-sm">$ -</div>
           </Box>
         </Box>
 
