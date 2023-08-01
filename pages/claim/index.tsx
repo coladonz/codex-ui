@@ -1,8 +1,7 @@
 "use client";
 
 import Home from "@/components/home";
-import CdxLitTabs from "./CdxLitTabs";
-import BunniLPTabs from "./BunniLPTabs";
+import ClaimPools from "./ClaimPools";
 
 export default function Claim() {
   return (
@@ -18,9 +17,8 @@ export default function Claim() {
             </div>
           </div>
         </div>
-        <CdxLitTabs />
       </div>
-      <BunniLPTabs />
+      <ClaimPools />
     </Home>
   );
 }
