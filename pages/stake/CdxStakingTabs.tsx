@@ -183,6 +183,7 @@ export default function CdxStakingTabs() {
                     onChange={(newValue) => {
                       setStakeAmount(newValue);
                     }}
+                    max={ethers.utils.formatEther((wantBalance as any) || 0)}
                     error={stakeAmountBigNumber.gt((wantBalance as any) || 0)}
                   />
                 </Grid>
@@ -249,6 +250,7 @@ export default function CdxStakingTabs() {
                     onChange={(newValue) => {
                       setUnstakeAmount(newValue);
                     }}
+                    max={ethers.utils.formatEther((stakedBalance as any) || 0)}
                     error={unstakeAmountBigNumber.gt(
                       (stakedBalance as any) || 0
                     )}

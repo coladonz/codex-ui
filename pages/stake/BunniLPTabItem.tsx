@@ -176,6 +176,7 @@ export default function BunniLPTabItem({ gauge }: { gauge: GaugeInfo }) {
                     onChange={(newValue) => {
                       setDepositAmount(newValue);
                     }}
+                    max={ethers.utils.formatEther((wantBalance as any) || 0)}
                     error={depositAmountBigNumber.gt((wantBalance as any) || 0)}
                   />
                 </Grid>
@@ -250,6 +251,7 @@ export default function BunniLPTabItem({ gauge }: { gauge: GaugeInfo }) {
                     onChange={(newValue) => {
                       setWithdrawAmount(newValue);
                     }}
+                    max={ethers.utils.formatEther((depositedBalance as any) || 0)}
                     error={withdrawAmountBigNumber.gt(
                       (depositedBalance as any) || 0
                     )}
