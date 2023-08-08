@@ -50,4 +50,22 @@ export const bunniGauges = [
     }
 ];
 
+export const tokens: {
+    [address: string]: {
+        name: string;
+        symbol: string;
+        decimals: number;
+    }
+} = {
+    "0x627fee87d0D9D2c55098A06ac805Db8F98B158Aa": {
+        name: "oLIT",
+        symbol: "oLIT",
+        decimals: 18
+    }
+}
+
+export const getToken = (address: string) => {
+    return tokens[address];
+}
+
 export default contracts;
