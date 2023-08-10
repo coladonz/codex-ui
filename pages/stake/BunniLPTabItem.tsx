@@ -17,6 +17,7 @@ import { IERC20, BaseRewardPool, Booster } from "@/abis";
 import AmountInput from "@/components/inputs/AmountInput";
 import WaitingModal from "@/components/waiting-modal/WaitingModal";
 import CodexTabs from "@/components/01-atoms/tabs/Tabs";
+import { waitForTransaction } from "wagmi/actions";
 
 export default function BunniLPTabItem({ gauge }: { gauge: GaugeInfo }) {
   const { chain } = useNetwork();
@@ -70,7 +71,7 @@ export default function BunniLPTabItem({ gauge }: { gauge: GaugeInfo }) {
     setWithdrawAmountBigNumber(amount);
   }, [withdrawAmount]);
 
-  const { writeAsync: approveWant, status: depositApproveStatus } =
+  const { writeAsync: approveWantAsync, status: depositApproveStatus } =
     useContractWrite({
       address: gauge?.bunniLp as Address,
       abi: IERC20,
@@ -79,16 +80,24 @@ export default function BunniLPTabItem({ gauge }: { gauge: GaugeInfo }) {
       chainId: chain?.id,
     });
 
-  useEffect(() => {
-    if (depositApproveStatus == "success") {
+  const approveWant = async () => {
+    setIsActive(true);
+    try {
+      const tx = await approveWantAsync();
+      await waitForTransaction({
+        hash: tx.hash,
+        confirmations: 1,
+      });
+
       reloadWantAllowance();
       setIsActive(false);
-    } else if (depositApproveStatus == "loading") {
-      setIsActive(true);
+    } catch (e) {
+      console.log(e);
+      setIsActive(false);
     }
-  }, [depositApproveStatus, reloadWantAllowance]);
+  };
 
-  const { writeAsync: deposit, status: depositStatus } = useContractWrite({
+  const { writeAsync: depositAsync, status: depositStatus } = useContractWrite({
     address: contracts.booster as Address,
     abi: Booster,
     functionName: "deposit",
@@ -96,24 +105,26 @@ export default function BunniLPTabItem({ gauge }: { gauge: GaugeInfo }) {
     chainId: chain?.id,
   });
 
-  useEffect(() => {
-    if (depositStatus == "success") {
+  const deposit = async () => {
+    setIsActive(true);
+    try {
+      const tx = await depositAsync();
+      await waitForTransaction({
+        hash: tx.hash,
+        confirmations: 1,
+      });
+
       reloadWantBalance();
       reloadWantAllowance();
       reloadDepositedBalance();
       setIsActive(false);
+    } catch (e) {
+      console.log(e);
+      setIsActive(false);
     }
-    if (depositStatus == "loading") {
-      setIsActive(true);
-    }
-  }, [
-    depositStatus,
-    reloadDepositedBalance,
-    reloadWantAllowance,
-    reloadWantBalance,
-  ]);
+  };
 
-  const { writeAsync: withdraw, status: withdrawStatus } = useContractWrite({
+  const { writeAsync: withdrawAsync, status: withdrawStatus } = useContractWrite({
     address: gauge?.oLITRewards as Address,
     abi: BaseRewardPool,
     functionName: "withdrawAndUnwrap",
@@ -121,15 +132,22 @@ export default function BunniLPTabItem({ gauge }: { gauge: GaugeInfo }) {
     chainId: chain?.id,
   });
 
-  useEffect(() => {
-    if (withdrawStatus == "success") {
+  const withdraw = async () => {
+    setIsActive(true);
+    try {
+      const tx = await withdrawAsync();
+      await waitForTransaction({
+        hash: tx.hash,
+        confirmations: 1,
+      });
+
       reloadDepositedBalance();
       setIsActive(false);
+    } catch (e) {
+      console.log(e);
+      setIsActive(false);
     }
-    if (withdrawStatus == "loading") {
-      setIsActive(true);
-    }
-  }, [withdrawStatus, reloadDepositedBalance]);
+  };
 
   return (
     <Box className="flex-col p-4 border border-gray-300">
@@ -251,7 +269,9 @@ export default function BunniLPTabItem({ gauge }: { gauge: GaugeInfo }) {
                     onChange={(newValue) => {
                       setWithdrawAmount(newValue);
                     }}
-                    max={ethers.utils.formatEther((depositedBalance as any) || 0)}
+                    max={ethers.utils.formatEther(
+                      (depositedBalance as any) || 0
+                    )}
                     error={withdrawAmountBigNumber.gt(
                       (depositedBalance as any) || 0
                     )}

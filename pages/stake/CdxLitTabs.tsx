@@ -1,7 +1,5 @@
 "use client";
 
-import Tabs from "@mui/material/Tabs";
-import Tab from "@mui/material/Tab";
 import { useEffect, useState } from "react";
 import { Box, Button, Grid, Link } from "@mui/material";
 import { getEtherscanLink } from "@/utils";
@@ -19,6 +17,7 @@ import { IERC20, LITDepositor } from "@/abis";
 import AmountInput from "@/components/inputs/AmountInput";
 import WaitingModal from "@/components/waiting-modal/WaitingModal";
 import CodexTabs from "@/components/01-atoms/tabs/Tabs";
+import { waitForTransaction } from "wagmi/actions";
 
 export default function CdxLitTabs() {
   const { chain } = useNetwork();
@@ -100,7 +99,7 @@ export default function CdxLitTabs() {
     setUnstakeAmountBigNumber(amount);
   }, [unstakeAmount]);
 
-  const { writeAsync: approveWant, status: convertApproveStatus } =
+  const { writeAsync: approveWantAsync, status: convertApproveStatus } =
     useContractWrite({
       address: contracts.BALANCER_20WETH_80LIT as Address,
       abi: IERC20,
@@ -109,17 +108,24 @@ export default function CdxLitTabs() {
       chainId: chain?.id,
     });
 
-  useEffect(() => {
-    if (convertApproveStatus == "success") {
+  const approveWant = async () => {
+    setIsActive(true);
+    try {
+      const tx = await approveWantAsync();
+      await waitForTransaction({
+        hash: tx.hash,
+        confirmations: 1,
+      });
+
       reloadWantAllowance();
       setIsActive(false);
+    } catch (e) {
+      console.log(e);
+      setIsActive(false);
     }
-    if (convertApproveStatus == "loading") {
-      setIsActive(true);
-    }
-  }, [convertApproveStatus, reloadWantAllowance]);
+  };
 
-  const { writeAsync: convert, status: convertStatus } = useContractWrite({
+  const { writeAsync: convertAsync, status: convertStatus } = useContractWrite({
     address: contracts.litDepositor as Address,
     abi: LITDepositor,
     functionName: "deposit",
@@ -127,24 +133,26 @@ export default function CdxLitTabs() {
     chainId: chain?.id,
   });
 
-  useEffect(() => {
-    if (convertStatus == "success") {
+  const convert = async () => {
+    setIsActive(true);
+    try {
+      const tx = await convertAsync();
+      await waitForTransaction({
+        hash: tx.hash,
+        confirmations: 1,
+      });
+
       reloadWantBalance();
       reloadWantAllowance();
       reloadCdxLITBalance();
       setIsActive(false);
+    } catch (e) {
+      console.log(e);
+      setIsActive(false);
     }
-    if (convertStatus == "loading") {
-      setIsActive(true);
-    }
-  }, [
-    convertStatus,
-    reloadCdxLITBalance,
-    reloadWantAllowance,
-    reloadWantBalance,
-  ]);
+  };
 
-  const { writeAsync: approveCdxLIT, status: stakeApproveStatus } =
+  const { writeAsync: approveCdxLITAsync, status: stakeApproveStatus } =
     useContractWrite({
       address: contracts.cdxLIT as Address,
       abi: IERC20,
@@ -153,17 +161,24 @@ export default function CdxLitTabs() {
       chainId: chain?.id,
     });
 
-  useEffect(() => {
-    if (stakeApproveStatus == "success") {
+  const approveCdxLIT = async () => {
+    setIsActive(true);
+    try {
+      const tx = await approveCdxLITAsync();
+      await waitForTransaction({
+        hash: tx.hash,
+        confirmations: 1,
+      });
+
       reloadCdxLITAllowance();
       setIsActive(false);
+    } catch (e) {
+      console.log(e);
+      setIsActive(false);
     }
-    if (stakeApproveStatus == "loading") {
-      setIsActive(true);
-    }
-  }, [stakeApproveStatus, reloadCdxLITAllowance]);
+  };
 
-  const { writeAsync: stake, status: stakeStatus } = useContractWrite({
+  const { writeAsync: stakeAsync, status: stakeStatus } = useContractWrite({
     address: contracts.cdxLITRewardPool as Address,
     abi: BaseRewardPool,
     functionName: "stake",
@@ -171,24 +186,26 @@ export default function CdxLitTabs() {
     chainId: chain?.id,
   });
 
-  useEffect(() => {
-    if (stakeStatus == "success") {
+  const stake = async () => {
+    setIsActive(true);
+    try {
+      const tx = await stakeAsync();
+      await waitForTransaction({
+        hash: tx.hash,
+        confirmations: 1,
+      });
+
       reloadCdxLITBalance();
       reloadCdxLITAllowance();
       reloadStakedBalance();
       setIsActive(false);
+    } catch (e) {
+      console.log(e);
+      setIsActive(false);
     }
-    if (stakeStatus == "loading") {
-      setIsActive(true);
-    }
-  }, [
-    stakeStatus,
-    reloadCdxLITBalance,
-    reloadCdxLITAllowance,
-    reloadStakedBalance,
-  ]);
+  };
 
-  const { writeAsync: unstake, status: unstakeStatus } = useContractWrite({
+  const { writeAsync: unstakeAsync, status: unstakeStatus } = useContractWrite({
     address: contracts.cdxLITRewardPool as Address,
     abi: BaseRewardPool,
     functionName: "withdraw",
@@ -196,16 +213,23 @@ export default function CdxLitTabs() {
     chainId: chain?.id,
   });
 
-  useEffect(() => {
-    if (unstakeStatus == "success") {
+  const unstake = async () => {
+    setIsActive(true);
+    try {
+      const tx = await unstakeAsync();
+      await waitForTransaction({
+        hash: tx.hash,
+        confirmations: 1,
+      });
+
       reloadCdxLITBalance();
       reloadStakedBalance();
       setIsActive(false);
+    } catch (e) {
+      console.log(e);
+      setIsActive(false);
     }
-    if (unstakeStatus == "loading") {
-      setIsActive(true);
-    }
-  }, [unstakeStatus, reloadCdxLITBalance, reloadStakedBalance]);
+  };
 
   return (
     <Box className="flex-col border border-gray-300 bg-gray-100 rounded-md p-4">

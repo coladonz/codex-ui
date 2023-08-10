@@ -1,8 +1,6 @@
-import Tabs from "@mui/material/Tabs";
-import Tab from "@mui/material/Tab";
 import { useEffect, useMemo, useState } from "react";
-import { Box, Button, Grid, Link, div } from "@mui/material";
-import { formatDateTimeString, getEtherscanLink } from "@/utils";
+import { Box, Button, Grid } from "@mui/material";
+import { formatDateTimeString } from "@/utils";
 import contracts from "@/config/contracts";
 import {
   Address,
@@ -11,12 +9,11 @@ import {
   useContractWrite,
   useNetwork,
 } from "wagmi";
-import { BigNumber, ethers } from "ethers";
-import { IERC20, CdxLockerV2 } from "@/abis";
-import AmountInput from "@/components/inputs/AmountInput";
+import { CdxLockerV2 } from "@/abis";
 import WaitingModal from "@/components/waiting-modal/WaitingModal";
 import { formatEther } from "viem";
 import Input from "@/components/01-atoms/input/Input";
+import { waitForTransaction } from "wagmi/actions";
 
 export default function CdxLocksView() {
   const { chain } = useNetwork();
@@ -31,7 +28,7 @@ export default function CdxLocksView() {
     args: [address],
   });
 
-  const { writeAsync: unlock, status: unlockStatus } = useContractWrite({
+  const { writeAsync: unlockAsync, status: unlockStatus } = useContractWrite({
     address: contracts.cdxLocker as Address,
     abi: CdxLockerV2,
     functionName: "withdrawExpiredLocksTo",
@@ -39,15 +36,22 @@ export default function CdxLocksView() {
     chainId: chain?.id,
   });
 
-  useEffect(() => {
-    if (unlockStatus == "success") {
+  const unlock = async () => {
+    setIsActive(true);
+    try {
+      const tx = await unlockAsync();
+      await waitForTransaction({
+        hash: tx.hash,
+        confirmations: 1,
+      });
+
       reloadLocks();
       setIsActive(false);
+    } catch (e) {
+      console.log(e);
+      setIsActive(false);
     }
-    if (unlockStatus == "loading") {
-      setIsActive(true);
-    }
-  }, [unlockStatus, reloadLocks]);
+  };
 
   const locks: {
     amount: bigint;

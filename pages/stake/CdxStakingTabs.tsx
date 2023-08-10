@@ -1,5 +1,3 @@
-import Tabs from "@mui/material/Tabs";
-import Tab from "@mui/material/Tab";
 import { useEffect, useState } from "react";
 import { Box, Button, Grid, Link } from "@mui/material";
 import { getEtherscanLink } from "@/utils";
@@ -16,6 +14,7 @@ import { IERC20, CdxRewardPool } from "@/abis";
 import AmountInput from "@/components/inputs/AmountInput";
 import WaitingModal from "@/components/waiting-modal/WaitingModal";
 import CodexTabs from "@/components/01-atoms/tabs/Tabs";
+import { waitForTransaction } from "wagmi/actions";
 
 export default function CdxStakingTabs() {
   const { chain } = useNetwork();
@@ -70,7 +69,7 @@ export default function CdxStakingTabs() {
     setUnstakeAmountBigNumber(amount);
   }, [unstakeAmount]);
 
-  const { writeAsync: approveCdx, status: stakeApproveStatus } =
+  const { writeAsync: approveCdxAsync, status: stakeApproveStatus } =
     useContractWrite({
       address: contracts.cdx as Address,
       abi: IERC20,
@@ -79,17 +78,24 @@ export default function CdxStakingTabs() {
       chainId: chain?.id,
     });
 
-  useEffect(() => {
-    if (stakeApproveStatus == "success") {
+  const approveCdx = async () => {
+    setIsActive(true);
+    try {
+      const tx = await approveCdxAsync();
+      await waitForTransaction({
+        hash: tx.hash,
+        confirmations: 1,
+      });
+
       reloadWantAllowance();
       setIsActive(false);
+    } catch (e) {
+      console.log(e);
+      setIsActive(false);
     }
-    if (stakeApproveStatus == "loading") {
-      setIsActive(true);
-    }
-  }, [stakeApproveStatus, reloadWantAllowance]);
+  };
 
-  const { writeAsync: stake, status: stakeStatus } = useContractWrite({
+  const { writeAsync: stakeAsync, status: stakeStatus } = useContractWrite({
     address: contracts.cdxRewardPool as Address,
     abi: CdxRewardPool,
     functionName: "stake",
@@ -97,24 +103,26 @@ export default function CdxStakingTabs() {
     chainId: chain?.id,
   });
 
-  useEffect(() => {
-    if (stakeStatus == "success") {
+  const stake = async () => {
+    setIsActive(true);
+    try {
+      const tx = await stakeAsync();
+      await waitForTransaction({
+        hash: tx.hash,
+        confirmations: 1,
+      });
+
       reloadWantBalance();
       reloadWantAllowance();
       reloadStakedBalance();
       setIsActive(false);
+    } catch (e) {
+      console.log(e);
+      setIsActive(false);
     }
-    if (stakeStatus == "loading") {
-      setIsActive(true);
-    }
-  }, [
-    stakeStatus,
-    reloadWantBalance,
-    reloadWantAllowance,
-    reloadStakedBalance,
-  ]);
+  };
 
-  const { writeAsync: unstake, status: unstakeStatus } = useContractWrite({
+  const { writeAsync: unstakeAsync, status: unstakeStatus } = useContractWrite({
     address: contracts.cdxRewardPool as Address,
     abi: CdxRewardPool,
     functionName: "withdraw",
@@ -122,16 +130,23 @@ export default function CdxStakingTabs() {
     chainId: chain?.id,
   });
 
-  useEffect(() => {
-    if (unstakeStatus == "success") {
+  const unstake = async () => {
+    setIsActive(true);
+    try {
+      const tx = await unstakeAsync();
+      await waitForTransaction({
+        hash: tx.hash,
+        confirmations: 1,
+      });
+
       reloadWantBalance();
       reloadStakedBalance();
       setIsActive(false);
+    } catch (e) {
+      console.log(e);
+      setIsActive(false);
     }
-    if (unstakeStatus == "loading") {
-      setIsActive(true);
-    }
-  }, [unstakeStatus, reloadWantBalance, reloadStakedBalance]);
+  };
 
   return (
     <Box className="flex-col p-4 border border-gray-300">
@@ -232,7 +247,7 @@ export default function CdxStakingTabs() {
                 <Grid item xs={12}>
                   <Box className="flex justify-between items-center">
                     <div className="text-gray-400 text-xs mb-1 ">
-                      Amount of LP to usntake
+                      Amount of LP to unstake
                     </div>
                     <div className="flex text-gray-400 text-xs mb-1 ">
                       Available:{" "}

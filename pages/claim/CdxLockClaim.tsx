@@ -12,6 +12,7 @@ import {
 import { ethers } from "ethers";
 import { useEffect, useState } from "react";
 import WaitingModal from "@/components/waiting-modal/WaitingModal";
+import { waitForTransaction } from "wagmi/actions";
 
 export function CdxLockClaim() {
   const { chain } = useNetwork();
@@ -23,7 +24,7 @@ export function CdxLockClaim() {
     functionName: "claimableRewards",
     args: [address],
   });
-  const { writeAsync: claim, status: claimStatus } = useContractWrite({
+  const { writeAsync: claimAsync, status: claimStatus } = useContractWrite({
     address: contracts.cdxRewardPool as Address,
     abi: CdxLockerV2,
     functionName: "getReward",
@@ -31,15 +32,22 @@ export function CdxLockClaim() {
     chainId: chain?.id,
   });
 
-  useEffect(() => {
-    if (claimStatus == "success") {
+  const claim = async () => {
+    setIsActive(true);
+    try {
+      const tx = await claimAsync();
+      await waitForTransaction({
+        hash: tx.hash,
+        confirmations: 1,
+      });
+
       reloadClaimable();
       setIsActive(false);
+    } catch (e) {
+      console.log(e);
+      setIsActive(false);
     }
-    if (claimStatus == "loading") {
-      setIsActive(true);
-    }
-  }, [claimStatus, reloadClaimable]);
+  };
 
   return (
     <>

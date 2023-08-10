@@ -1,5 +1,3 @@
-import Tabs from "@mui/material/Tabs";
-import Tab from "@mui/material/Tab";
 import { useEffect, useState } from "react";
 import { Box, Button, Grid, Link } from "@mui/material";
 import { getEtherscanLink } from "@/utils";
@@ -16,6 +14,7 @@ import { IERC20, CdxLockerV2 } from "@/abis";
 import AmountInput from "@/components/inputs/AmountInput";
 import WaitingModal from "@/components/waiting-modal/WaitingModal";
 import CodexTabs from "@/components/01-atoms/tabs/Tabs";
+import { waitForTransaction } from "wagmi/actions";
 
 export default function CdxLockTabs() {
   const { chain } = useNetwork();
@@ -50,7 +49,7 @@ export default function CdxLockTabs() {
     setLockAmountBigNumber(amount);
   }, [lockAmount]);
 
-  const { writeAsync: approveCdx, status: lockApproveStatus } =
+  const { writeAsync: approveCdxAsync, status: lockApproveStatus } =
     useContractWrite({
       address: contracts.cdx as Address,
       abi: IERC20,
@@ -59,17 +58,24 @@ export default function CdxLockTabs() {
       chainId: chain?.id,
     });
 
-  useEffect(() => {
-    if (lockApproveStatus == "success") {
+  const approveCdx = async () => {
+    setIsActive(true);
+    try {
+      const tx = await approveCdxAsync();
+      await waitForTransaction({
+        hash: tx.hash,
+        confirmations: 1,
+      });
+
       reloadWantAllowance();
       setIsActive(false);
+    } catch (e) {
+      console.log(e);
+      setIsActive(false);
     }
-    if (lockApproveStatus == "loading") {
-      setIsActive(true);
-    }
-  }, [lockApproveStatus, reloadWantAllowance]);
+  };
 
-  const { writeAsync: lock, status: lockStatus } = useContractWrite({
+  const { writeAsync: lockAsync, status: lockStatus } = useContractWrite({
     address: contracts.cdxLocker as Address,
     abi: CdxLockerV2,
     functionName: "lock",
@@ -77,16 +83,23 @@ export default function CdxLockTabs() {
     chainId: chain?.id,
   });
 
-  useEffect(() => {
-    if (lockStatus == "success") {
+  const lock = async () => {
+    setIsActive(true);
+    try {
+      const tx = await lockAsync();
+      await waitForTransaction({
+        hash: tx.hash,
+        confirmations: 1,
+      });
+
       reloadWantBalance();
       reloadWantAllowance();
       setIsActive(false);
+    } catch (e) {
+      console.log(e);
+      setIsActive(false);
     }
-    if (lockStatus == "loading") {
-      setIsActive(true);
-    }
-  }, [lockStatus, reloadWantBalance, reloadWantAllowance]);
+  };
 
   return (
     <Box className="flex-col border border-gray-300 bg-gray-100 p-4">
@@ -111,11 +124,7 @@ export default function CdxLockTabs() {
           </Box>
         </Box>
 
-        <CodexTabs
-          index={index}
-          setIndex={setIndex}
-          items={["Lock", "Info"]}
-        />
+        <CodexTabs index={index} setIndex={setIndex} items={["Lock", "Info"]} />
       </Box>
       <Box className="p-4 pt-6">
         {index === 0 && (
@@ -152,7 +161,12 @@ export default function CdxLockTabs() {
                     error={lockAmountBigNumber.gt((wantBalance as any) || 0)}
                   />
                 </Grid>
-                <Grid item xs={12} md={9} className="flex items-center justify-center">
+                <Grid
+                  item
+                  xs={12}
+                  md={9}
+                  className="flex items-center justify-center"
+                >
                   <Grid container spacing={2}>
                     <Grid item xs={6}>
                       <Button
@@ -191,7 +205,7 @@ export default function CdxLockTabs() {
 
         {index === 1 && (
           <Box className="flex-col">
-          <Grid container spacing={0} className="mb-4 text-xs">
+            <Grid container spacing={0} className="mb-4 text-xs">
               <Grid item xs={3}>
                 CDX token address
               </Grid>
