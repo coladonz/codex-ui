@@ -1,7 +1,5 @@
-import Tabs from "@mui/material/Tabs";
-import Tab from "@mui/material/Tab";
 import { useEffect, useState } from "react";
-import { Box, Button, Grid, Link, Typography } from "@mui/material";
+import { Box, Button, Grid, Link } from "@mui/material";
 import { getEtherscanLink } from "@/utils";
 import contracts, { GaugeInfo } from "@/config/contracts";
 import {
@@ -10,7 +8,6 @@ import {
   useContractRead,
   useContractWrite,
   useNetwork,
-  useWaitForTransaction,
 } from "wagmi";
 import { BigNumber, ethers } from "ethers";
 import { IERC20, BaseRewardPool, Booster } from "@/abis";
@@ -124,13 +121,14 @@ export default function BunniLPTabItem({ gauge }: { gauge: GaugeInfo }) {
     }
   };
 
-  const { writeAsync: withdrawAsync, status: withdrawStatus } = useContractWrite({
-    address: gauge?.oLITRewards as Address,
-    abi: BaseRewardPool,
-    functionName: "withdrawAndUnwrap",
-    args: [withdrawAmountBigNumber, false],
-    chainId: chain?.id,
-  });
+  const { writeAsync: withdrawAsync, status: withdrawStatus } =
+    useContractWrite({
+      address: gauge?.oLITRewards as Address,
+      abi: BaseRewardPool,
+      functionName: "withdrawAndUnwrap",
+      args: [withdrawAmountBigNumber, false],
+      chainId: chain?.id,
+    });
 
   const withdraw = async () => {
     setIsActive(true);

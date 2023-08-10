@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Box, Button, Grid } from "@mui/material";
 import { formatDateTimeString } from "@/utils";
 import contracts from "@/config/contracts";

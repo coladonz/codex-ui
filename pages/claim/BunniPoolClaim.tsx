@@ -10,11 +10,11 @@ import {
   useNetwork,
 } from "wagmi";
 import { ethers } from "ethers";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import WaitingModal from "@/components/waiting-modal/WaitingModal";
 import { waitForTransaction } from "wagmi/actions";
 
-export function BunniPoolClaim({ gauge }: { gauge: GaugeInfo }) {
+export default function BunniPoolClaim({ gauge }: { gauge: GaugeInfo }) {
   const { chain } = useNetwork();
   const { address } = useAccount();
   const [isActive, setIsActive] = useState(false);

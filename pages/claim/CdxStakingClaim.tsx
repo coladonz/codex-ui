@@ -10,11 +10,11 @@ import {
   useNetwork,
 } from "wagmi";
 import { ethers } from "ethers";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import WaitingModal from "@/components/waiting-modal/WaitingModal";
 import { waitForTransaction } from "wagmi/actions";
 
-export function CdxStakingClaim() {
+export default function CdxStakingClaim() {
   const { chain } = useNetwork();
   const { address } = useAccount();
   const [isActive, setIsActive] = useState(false);

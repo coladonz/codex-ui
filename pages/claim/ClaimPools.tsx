@@ -1,9 +1,9 @@
 import { Box, Grid, Table, TableBody } from "@mui/material";
 import { bunniGauges } from "@/config/contracts";
-import { BunniPoolClaim } from "./BunniPoolClaim";
-import { CdxStakingClaim } from "./CdxStakingClaim";
-import { CdxLitStakingClaim } from "./CdxLitStakingClaim";
-import { CdxLockClaim } from "./CdxLockClaim";
+import CdxLitStakingClaim from "./CdxLitStakingClaim";
+import CdxStakingClaim from "./CdxStakingClaim";
+import CdxLockClaim from "./CdxLockClaim";
+import BunniPoolClaim from "./BunniPoolClaim";
 
 export default function ClaimPools() {
   return (
